@@ -45,7 +45,8 @@ def predict(X, threshold):
 
 def compute_score_inv(threshold, predictions, targets):
     predictions = predict(predictions, threshold)
-    score = compute_iou_batch(predictions, targets, classes=[1])
+    #score = compute_iou_batch(predictions, targets, classes=[1])
+    score = compute_dice(predictions, targets)
     return 1 - score
 
 
@@ -56,19 +57,18 @@ class Meter:
         self.phase = phase
         self.epoch = epoch
         self.save_folder = os.path.join(save_folder, "logs")
-        self.base_threshold = 0.2
-        self.best_threshold = 0.2
-        self.base_ious = []
+        self.base_threshold = 0.5
+        self.best_threshold = 0.5
+        self.base_dice_scores = []
 
     def update(self, targets, outputs):
         """targets, outputs are detached CUDA tensors"""
         #pdb.set_trace()
-        targets = targets.tolist()
-        outputs = torch.sigmoid(outputs).tolist()
-
+        outputs = outputs.cpu().numpy()
+        targets = targets.cpu().numpy()
         base_preds = predict(outputs, self.base_threshold)
-        iou = compute_iou_batch(outputs, targets, classes=[1])
-        self.base_ious.append(iou)
+        dice = compute_dice(outputs, targets)
+        self.base_dice_scores.append(dice)
 
         if self.phase == "val": # [10]
             self.targets.extend(targets)
@@ -93,14 +93,14 @@ class Meter:
         print("Best threshold: %s" % self.best_threshold)
         return self.best_threshold
 
-    def get_ious(self):
+    def get_metrics(self):
         #pdb.set_trace()
-        base_iou = np.nanmean(self.base_ious)
-        best_iou = base_iou
+        base_dice = np.mean(self.base_dice_scores)
+        best_dice = base_dice
         if self.phase == "val":
             best_preds = predict(self.predictions, self.best_threshold)
-            best_iou = compute_iou_batch(best_preds, self.targets, classes=[1])
-        return best_iou, base_iou
+            best_dice = compute_dice(best_preds, self.targets)
+        return best_dice, base_dice
 
 
 def plot_ROC(roc, targets, predictions, phase, epoch, folder):
@@ -151,17 +151,17 @@ def iter_log(log, phase, epoch, iteration, epoch_size, loss, start):
 
 def epoch_log(log, tb, phase, epoch, epoch_loss, meter, start):
     diff = time.time() - start
-    best_iou, base_iou = meter.get_ious()
+    best_dice, base_dice = meter.get_metrics()
 
-    log("%s %d | loss: %0.4f | best/base ious: %0.4f/%0.4f\n"
-            % (phase, epoch, epoch_loss, best_iou, base_iou))
+    log("%s %d | loss: %0.4f | best/base dice: %0.4f/%0.4f\n"
+            % (phase, epoch, epoch_loss, best_dice, base_dice))
     log("Time taken for %s phase: %02d:%02d \n", phase, diff // 60, diff % 60)
 
     # tensorboard
     logger = tb[phase]
     logger.log_value("loss", epoch_loss, epoch)
-    logger.log_value("best_iou", best_iou, epoch)
-    logger.log_value("base_iou", base_iou, epoch)
+    logger.log_value("best_dice", best_dice, epoch)
+    logger.log_value("base_dice", base_dice, epoch)
 
     return None
 
@@ -199,6 +199,14 @@ def compute_iou_batch(outputs, labels, classes=None):
     return iou
 
 
+def compute_dice(outputs, target):
+    eps = 0.0001
+    inter = np.sum(outputs * target)
+    union = np.sum(outputs) + np.sum(target) + eps
+    t = (2 * inter + eps) / union
+    return t
+
+
 def save_hyperparameters(trainer, remark):
     hp_file = os.path.join(trainer.save_folder, "parameters.txt")
     time_now = datetime.now()
@@ -208,7 +216,7 @@ def save_hyperparameters(trainer, remark):
         f"Time: {time_now}\n"
         + f"model_name: {trainer.model_name}\n"
         + f"train_df_name: {trainer.train_df_name}\n"
-        + f"images_folder: {trainer.images_folder}\n"
+        #+ f"images_folder: {trainer.images_folder}\n"
         + f"resume: {trainer.resume}\n"
         + f"pretrained: {trainer.pretrained}\n"
         + f"pretrained_path: {trainer.pretrained_path}\n"

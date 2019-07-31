@@ -41,7 +41,6 @@ class Trainer(object):
         self.model_name = "UNet"
         ext_text = "test"
         self.num_samples = None  # 5000
-        #date = "307"
         self.folder = f"weights/{date}_{self.model_name}_f{self.fold}_{ext_text}"
         self.resume = False
         self.pretrained = False
@@ -49,7 +48,7 @@ class Trainer(object):
         self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
         self.train_df_name = "train.csv"
         self.num_workers = 12
-        self.batch_size = {"train": 32, "val": 4}
+        self.batch_size = {"train": 16, "val": 8}
         self.num_classes = 1
         self.top_lr = 5e-4
         self.ep2unfreeze = 0
@@ -70,9 +69,9 @@ class Trainer(object):
         self.cuda = torch.cuda.is_available()
         torch.set_num_threads(12)
         self.device = torch.device("cuda:0" if self.cuda else "cpu")
-        data_folder = "data"
-        self.images_folder = os.path.join(HOME, data_folder, "train_png")
-        self.df_path = os.path.join(HOME, data_folder, self.train_df_name)
+        self.data_folder = "data"
+        #self.images_folder = os.path.join(HOME, data_folder, "train_png")
+        self.df_path = os.path.join(HOME, self.data_folder, self.train_df_name)
         self.save_folder = os.path.join(HOME, self.folder)
         self.model_path = os.path.join(self.save_folder, "model.pth")
         self.ckpt_path = os.path.join(self.save_folder, "ckpt.pth")
@@ -119,7 +118,7 @@ class Trainer(object):
             phase: provider(
                 self.fold,
                 self.total_folds,
-                self.images_folder,
+                self.data_folder,
                 self.df_path,
                 phase,
                 self.size,
@@ -197,6 +196,7 @@ class Trainer(object):
                 self.optimizer.step()
             running_loss += loss.item()
             # pdb.set_trace()
+            outputs = torch.sigmoid(outputs)
             meter.update(targets['masks'], outputs.detach())
             tk0.set_postfix(loss=(running_loss / ((iteration + 1) * batch_size)))
             #if iteration % 100 == 0:

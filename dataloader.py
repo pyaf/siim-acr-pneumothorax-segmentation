@@ -34,15 +34,10 @@ class SIIMDataset(Dataset):
 
     def __getitem__(self, idx):
         image_id = self.fnames[idx]
+
         image_path = os.path.join(self.root, "npy_train_256",  image_id + '.npy')
         mask_path = os.path.join(self.root, "npy_masks_256", image_id + '.npy')
-
-        #img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-        #img = np.expand_dims(img, -1) # [10]
         img = np.load(image_path)
-        #mask_idx = np.load(mask_path)
-        #mask = np.zeros([1024, 1024])
-        #mask[mask_idx[:, 0], mask_idx[:, 1]] = 1
         mask = np.load(mask_path)
 
         augmented = self.transforms(image=img, mask=mask)
@@ -81,7 +76,7 @@ def get_transforms(phase, size, mean, std):
         [
 
             #albumentations.Normalize(mean=mean, std=std, p=1),
-            albumentations.Resize(size, size),
+            #albumentations.Resize(size, size),
             AT.ToTensor(),  # [6]
         ]
     )
