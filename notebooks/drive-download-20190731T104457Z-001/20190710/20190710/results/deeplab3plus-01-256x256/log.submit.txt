@@ -1,0 +1,103 @@
+ 
+
+--- [START 2019-07-09_22-21-12] ----------------------------------------------------------------
+
+	@common.py:  
+	set random seed
+		SEED = 1562682073
+	set cuda environment
+		torch.__version__              = 1.1.0
+		torch.version.cuda             = 9.0.176
+		torch.backends.cudnn.version() = 7501
+		os['CUDA_VISIBLE_DEVICES']     = 0
+		torch.cuda.device_count()      = 1
+
+
+
+	SEED         = 1562682073
+	PROJECT_PATH = /root/share/project/kaggle/2019/chest/delivery/20190710/code/dummy_02a
+	__file__     = /root/share/project/kaggle/2019/chest/delivery/20190710/code/dummy_02a/deeplab3_256x256_01/submit.py
+	out_dir      = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256
+
+** dataset setting **
+batch_size = 4
+test_dataset : 
+	mode   = train
+	split  = valid_600.npy
+	csv    = train-rle.csv
+	folder = dicom/dicom-images-train
+	num_component[n] = 300
+	num_component[0] = 300
+	len    = 600
+
+
+** net setting **
+	initial_checkpoint = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256/checkpoint/00210000_model.pth
+<class 'model.DeepLab3Plus'>
+
+
+loss = 0.94275
+dice      = 0.68995
+dice_pos  = 0.58989
+dice_neg  = 0.79000
+num_pos   = 300
+num_neg   = 300
+
+
+threshold = 0.90000
+min_size  = 2400
+
+id_file   = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256/submit/train/test-id.txt
+npy_file  = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256/submit/train/test-probability.npy
+csv_file  = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256/submit/train/submission-00210000_model.csv
+
+test_id = 600
+test_probability = (600, 1, 256, 256)
+
+
+--- [START 2019-07-09_22-23-25] ----------------------------------------------------------------
+
+	@common.py:  
+	set random seed
+		SEED = 1562682206
+	set cuda environment
+		torch.__version__              = 1.1.0
+		torch.version.cuda             = 9.0.176
+		torch.backends.cudnn.version() = 7501
+		os['CUDA_VISIBLE_DEVICES']     = 0
+		torch.cuda.device_count()      = 1
+
+
+
+	SEED         = 1562682206
+	PROJECT_PATH = /root/share/project/kaggle/2019/chest/delivery/20190710/code/dummy_02a
+	__file__     = /root/share/project/kaggle/2019/chest/delivery/20190710/code/dummy_02a/deeplab3_256x256_01/submit.py
+	out_dir      = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256
+
+** dataset setting **
+batch_size = 4
+test_dataset : 
+	mode   = test
+	split  = None
+	csv    = test-rle.csv
+	folder = dicom/dicom-images-test
+	num_component[n] = ?
+	num_component[0] = ?
+	len    = 1372
+
+
+** net setting **
+	initial_checkpoint = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256/checkpoint/00210000_model.pth
+<class 'model.DeepLab3Plus'>
+
+
+threshold = 0.90000
+min_size  = 2400
+
+id_file   = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256/submit/test/test-id.txt
+npy_file  = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256/submit/test/test-probability.npy
+csv_file  = /root/share/project/kaggle/2019/chest/result/deeplab3plus-01-256x256/submit/test/submission-00210000_model.csv
+
+test_id = 1372
+test_probability = (1372, 1, 256, 256)
+

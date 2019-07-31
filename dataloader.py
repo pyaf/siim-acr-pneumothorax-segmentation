@@ -12,68 +12,52 @@ from PIL import Image
 from torch.utils.data import DataLoader, Dataset, sampler
 from torchvision.datasets.folder import pil_loader
 from sklearn.model_selection import train_test_split, StratifiedKFold
-from utils import to_multi_label
+#from utils import to_multi_label
 import albumentations
 from albumentations import torch as AT
 from mask_functions import *
 
 
 class SIIMDataset(Dataset):
-    def __init__(self, df, img_dir, size, mean, std, phase):
+    def __init__(self, df, data_folder, size, mean, std, phase):
         self.df = df
-        self.image_dir = img_dir
-        self.height = size
-        self.width = size
+        self.root = data_folder
+        self.size = size
         self.mean = mean
         self.std = std
         self.phase = phase
-        self.image_info = defaultdict(dict)
-
         self.transforms = get_transforms(phase, size, mean, std)
-        counter = 0
-        for index, row in tqdm(self.df.iterrows(), total=len(self.df)):
-            image_id = row['ImageId']
-            image_path = os.path.join(self.image_dir, image_id + '.png')
-            if os.path.exists(image_path) and int(row["has_mask"]):
-                self.image_info[counter]["image_id"] = image_id
-                self.image_info[counter]["image_path"] = image_path
-                self.image_info[counter]["annotations"] = row["EncodedPixels"].strip()
-                counter += 1
-        print(f"counter: {counter}")
+
+        self.df = self.df.drop_duplicates('ImageId')
+        self.fnames = self.df['ImageId'].tolist()
+        self.labels = (self.df['EncodedPixels'] != '-1').values.astype(np.int32)
 
     def __getitem__(self, idx):
-        info = self.image_info[idx]
+        image_id = self.fnames[idx]
+        image_path = os.path.join(self.root, "npy_train_256",  image_id + '.npy')
+        mask_path = os.path.join(self.root, "npy_masks_256", image_id + '.npy')
 
-        img_path = info["image_path"]
-        img = Image.open(img_path).convert("RGB")
-        width, height = img.size
-        img = img.resize((self.width, self.height), resample=Image.BILINEAR)
-
-        mask = rle2mask(info['annotations'], width, height)
-        mask = Image.fromarray(mask.T)
-        mask = mask.resize((self.width, self.height), resample=Image.BILINEAR)
-        #mask = np.expand_dims(mask, axis=0)
-
-        #labels = torch.ones((1,), dtype=torch.int64)
-        #labels = torch.Tensor([1])
-
-        target = {}
-        #target["labels"] = labels
-        target["image_id"] = info['image_id']
-        img = np.asarray(img)
-        mask = np.asarray(mask)
+        #img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        #img = np.expand_dims(img, -1) # [10]
+        img = np.load(image_path)
+        #mask_idx = np.load(mask_path)
+        #mask = np.zeros([1024, 1024])
+        #mask[mask_idx[:, 0], mask_idx[:, 1]] = 1
+        mask = np.load(mask_path)
 
         augmented = self.transforms(image=img, mask=mask)
-        img = augmented['image']
+        img = augmented['image'] / 255.0
         mask = augmented['mask']
 
-        #masks = torch.as_tensor(mask, dtype=torch.uint8)
-        target["masks"] = mask / 255.0 # [2] .type('torch.LongTensor') # int64
-
+        target = {}
+        target["labels"] = self.labels[idx]
+        target["image_id"] = image_id
+        target["masks"] = mask
         return img, target
 
     def __len__(self):
-        return len(self.image_info)
+        #return 100
+        return len(self.fnames)
 
 
 def get_transforms(phase, size, mean, std):
@@ -96,9 +80,9 @@ def get_transforms(phase, size, mean, std):
     list_transforms.extend(
         [
 
-            albumentations.Normalize(mean=mean, std=std, p=1),
-            #albumentations.Resize(size, size),
-            AT.ToTensor(normalize=None),  # [6]
+            #albumentations.Normalize(mean=mean, std=std, p=1),
+            albumentations.Resize(size, size),
+            AT.ToTensor(),  # [6]
         ]
     )
     return albumentations.Compose(list_transforms)
@@ -111,8 +95,8 @@ def provider(
     df_path,
     phase,
     size,
-    mean,
-    std,
+    mean=None,
+    std=None,
     class_weights=None,
     batch_size=8,
     num_workers=4,
@@ -148,7 +132,7 @@ if __name__ == "__main__":
     start = time.time()
     phase = "train"
     #phase = "val"
-    num_workers = 0
+    num_workers = 12
     fold = 0
     total_folds = 5
     mean = (0.485, 0.456, 0.406)
@@ -164,13 +148,13 @@ if __name__ == "__main__":
     num_samples = None  # 5000
     class_weights = True  # [1, 1, 1, 1, 1]
     batch_size = 16
-    images_folder = os.path.join(root, data_folder, "train_png/")  #
+    #images_folder = os.path.join(root, data_folder, "train_png/")  #
     df_path = os.path.join(root, data_folder, train_df_name)  #
 
     dataloader = provider(
         fold,
         total_folds,
-        images_folder,
+        data_folder,
         df_path,
         phase,
         size,
@@ -195,12 +179,12 @@ if __name__ == "__main__":
 
         print("%d/%d" % (idx, total_len), images.shape, masks.shape, labels.shape)
         total_labels.extend(labels.tolist())
-        # pdb.set_trace()
-    #print(np.unique(total_labels, return_counts=True))
+    #pdb.set_trace()
+
+    print('Unique label count:', np.unique(total_labels, return_counts=True))
     diff = time.time() - start
     print('Time taken: %02d:%02d' % (diff//60, diff % 60))
-
-    print(np.unique(list(fnames_dict.values()), return_counts=True))
+    print('fnames unique count:', np.unique(list(fnames_dict.values()), return_counts=True))
     pdb.set_trace()
 
 
@@ -213,4 +197,5 @@ https://github.com/btgraham/SparseConvNet/tree/kaggle_Diabetic_Retinopathy_compe
 [2]: masks are not normalized in albumentation's Normalize function
 [6]: albumentations.Normalize will divide by 255, subtract mean and divide by std. output dtype = float32. ToTensor converts to torch tensor and divides by 255 if input dtype is uint8.
 [7]: indices of hard examples, evaluated using 0.81 scoring model.
+[10]: albumentation's ToTensor supports (w, h) images, no grayscale, so (w, h, 1). IMP: It doesn't give any warning, returns transposed image (weird, yeah)
 """

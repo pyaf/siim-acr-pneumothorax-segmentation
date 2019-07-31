@@ -6,6 +6,7 @@ from datetime import datetime
 import _thread
 
 from apex import amp
+from tqdm import tqdm
 import torch
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
@@ -38,20 +39,21 @@ class Trainer(object):
         self.total_folds = 7
         self.class_weights = None #[1, 1, 1, 1, 1.3]
         self.model_name = "UNet"
-        ext_text = ""
+        ext_text = "test"
         self.num_samples = None  # 5000
+        #date = "307"
         self.folder = f"weights/{date}_{self.model_name}_f{self.fold}_{ext_text}"
         self.resume = False
         self.pretrained = False
         self.pretrained_path = "weights//ckpt31.pth"
-        self.resume_path = os.path.join(HOME, self.folder, "ckpt4.pth")
+        self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
         self.train_df_name = "train.csv"
         self.num_workers = 12
-        self.batch_size = {"train": 8, "val": 4}
+        self.batch_size = {"train": 32, "val": 4}
         self.num_classes = 1
-        self.top_lr = 5e-5
-        self.ep2unfreeze = 5
-        self.num_epochs = 40
+        self.top_lr = 5e-4
+        self.ep2unfreeze = 0
+        self.num_epochs = 100
         # self.base_lr = self.top_lr * 0.001
         self.base_lr = None
         self.momentum = 0.95
@@ -170,7 +172,6 @@ class Trainer(object):
         #targets = targets.view(-1, 1)  # [n] -> [n, 1] V. imp for MSELoss
         outputs = self.net(images)
         #pdb.set_trace()
-        #outputs = torch.sigmoid(outputs)
         loss = self.criterion(outputs.flatten(), masks.flatten())
         return loss, outputs
 
@@ -181,10 +182,10 @@ class Trainer(object):
         start = time.time()
         self.net.train(phase == "train")
         dataloader = self.dataloaders[phase]
-        running_loss = 0
-        total_iters = len(dataloader)
+        running_loss = 0.0
         total_images = len(dataloader)
-        for iteration, batch in enumerate(dataloader):
+        tk0 = tqdm(dataloader, total=total_images)
+        for iteration, batch in enumerate(tk0):
             images, targets = batch
             # pdb.set_trace()
             self.optimizer.zero_grad()
@@ -196,16 +197,17 @@ class Trainer(object):
                 self.optimizer.step()
             running_loss += loss.item()
             # pdb.set_trace()
-            #meter.update(targets, outputs.detach())
-            if iteration % 100 == 0:
-                iter_log(self.log, phase, epoch, iteration,
-                         total_iters, loss, start)
-        #best_thresholds = meter.get_best_thresholds()
+            meter.update(targets['masks'], outputs.detach())
+            tk0.set_postfix(loss=(running_loss / ((iteration + 1) * batch_size)))
+            #if iteration % 100 == 0:
+            #    iter_log(self.log, phase, epoch, iteration,
+            #             total_iters, loss, start)
+        best_threshold = meter.get_best_threshold()
         epoch_loss = running_loss / total_images
         epoch_log(self.log, self.tb, phase,
                         epoch, epoch_loss, meter, start)
         torch.cuda.empty_cache()
-        return epoch_loss
+        return epoch_loss, best_threshold
 
     def train(self):
         t0 = time.time()
@@ -224,7 +226,8 @@ class Trainer(object):
                 "state_dict": self.net.state_dict(),
                 "optimizer": self.optimizer.state_dict(),
             }
-            val_loss = self.iterate(epoch, "val")
+            val_loss, best_threshold = self.iterate(epoch, "val")
+            state['best_threshold'] = best_threshold
             torch.save(state, self.ckpt_path)  # [2]
             self.scheduler.step(val_loss)
 

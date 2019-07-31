@@ -1,0 +1,63 @@
+
+
+--- [START 2019-07-17_21-29-16] ----------------------------------------------------------------
+
+	@common.py:  
+	set random seed
+		SEED = 1563370157
+	set cuda environment
+		torch.__version__              = 1.1.0
+		torch.version.cuda             = 9.0.176
+		torch.backends.cudnn.version() = 7501
+		os['CUDA_VISIBLE_DEVICES']     = 0
+		torch.cuda.device_count()      = 1
+
+
+
+	SEED         = 1563370157
+	PROJECT_PATH = /root/share/project/kaggle/2019/chest/build/single_mask_05
+	__file__     = /root/share/project/kaggle/2019/chest/build/single_mask_05/unet_1/submit.py
+	out_dir      = /root/share/project/kaggle/2019/chest/result/unet-256-fold2-00
+
+** dataset setting **
+batch_size = 4
+test_dataset : 
+	mode    = train
+	split   = valid2_600.npy
+	csv     = ['train-rle.single-mask.csv']
+	label-1 = 300
+	label-0 = 300
+	len     = 600
+
+
+** net setting **
+	initial_checkpoint = /root/share/project/kaggle/2019/chest/result/unet-256-fold2-00/checkpoint/00270000_model.pth
+<class 'model.UNet'>
+
+
+loss     = 0.03317
+dice_neg = 0.87333
+dice_pos = 0.40136
+dice     = 0.63735
+
+
+initial_checkpoint = /root/share/project/kaggle/2019/chest/result/unet-256-fold2-00/checkpoint/00270000_model.pth
+threshold = 0.900000
+min_size  = 3500
+
+kaggle_neg_score = 0.98333
+kaggle_pos_score = 0.28598
+kaggle_score     = 0.83591
+
+
+threshold = 0.90000
+min_size  = 3500
+
+id_file      = /root/share/project/kaggle/2019/chest/result/unet-256-fold2-00/submit/train/test-id.txt
+predict_file = /root/share/project/kaggle/2019/chest/result/unet-256-fold2-00/submit/train/test-probability.npy
+csv_file     = /root/share/project/kaggle/2019/chest/result/unet-256-fold2-00/submit/train/submission-00270000_model-th0.90.csv
+
+test_id = 600
+test_probability = (600, 1, 256, 256)
+
+

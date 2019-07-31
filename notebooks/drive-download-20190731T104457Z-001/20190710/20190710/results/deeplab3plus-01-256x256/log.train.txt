@@ -1,0 +1,64 @@
+
+--- [START 2019-07-09_22-00-20] ----------------------------------------------------------------
+
+	@common.py:  
+	set random seed
+		SEED = 1562680821
+	set cuda environment
+		torch.__version__              = 1.1.0
+		torch.version.cuda             = 9.0.176
+		torch.backends.cudnn.version() = 7501
+		os['CUDA_VISIBLE_DEVICES']     = 0
+		torch.cuda.device_count()      = 1
+
+
+
+	SEED         = 1562680821
+	PROJECT_PATH = /root/share/project/kaggle/2019/chest/delivery/20190710/code/dummy_02a
+	__file__     = /root/share/project/kaggle/2019/chest/delivery/20190710/code/dummy_02a/deeplab3_256x256_01/train.py
+	out_dir      = /root/share/project/kaggle/2019/chest/delivery/20190710/results/deeplab3plus-01-256x256
+
+** dataset setting **
+batch_size = 2
+train_dataset : 
+	mode   = train
+	split  = train_10075.npy
+	csv    = train-rle.csv
+	folder = dicom/dicom-images-train
+	num_component[n] = 2079
+	num_component[0] = 7996
+	len    = 10075
+
+valid_dataset : 
+	mode   = train
+	split  = valid_600.npy
+	csv    = train-rle.csv
+	folder = dicom/dicom-images-train
+	num_component[n] = 300
+	num_component[0] = 300
+	len    = 600
+
+
+** net setting **
+	initial_checkpoint = /root/share/project/kaggle/2019/chest/delivery/20190710/results/deeplab3plus-01-256x256/checkpoint/00210000_model.pth
+<class 'model.DeepLab3Plus'>
+
+optimizer
+  SGD (
+Parameter Group 0
+    dampening: 0
+    lr: 0.001
+    momentum: 0.9
+    nesterov: False
+    weight_decay: 0.0001
+)
+schduler
+  NullScheduler
+lr=0.00100 
+
+** start training here! **
+   batch_size =2,  iter_accum=8
+                      |----------- VALID -----------|-------- TRAIN/BATCH -------------------------
+rate     iter   epoch |  loss    dice   neg   pos   |   loss    dice  neg   pos   |  time          
+---------------------------------------------------------------------------------------------------
+0.00000  210.0*  78.4 |  0.789   0.593  0.79  0.40  |  0.000   0.000  0.00  0.00  |  0 hr 00 min

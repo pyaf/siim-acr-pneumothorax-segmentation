@@ -36,60 +36,16 @@ def logger_init(save_folder):
     logger.addHandler(console)
     return logger
 
-class CM(ConfusionMatrix): def __init__(self, *args): ConfusionMatrix.__init__(self, *args)
 
-    def save(self, name, best_qwk, base_qwk, loss, **kwargs):
-        """ add `qwk` and `loss` to the saved obj,
-        Use json.load(fileobject) for reading qwk and loss values,
-        they won't be read by ConfusionMatrix class
-        """
-        status = self.save_obj(name, **kwargs)
-        obj_full_path = status["Message"]
-        with open(obj_full_path, "r") as f:
-            dump_dict = json.load(f)
-            dump_dict["best_qwk"] = best_qwk
-            dump_dict["base_qwk"] = base_qwk
-            dump_dict["loss"] = loss
-        json.dump(dump_dict, open(obj_full_path, "w"))
-
-
-def to_multi_label(target, classes):
-    """[0, 0, 1, 0] to [1, 1, 1, 0]"""
-    multi_label = np.zeros((len(target), classes))
-    for i in range(len(target)):
-        j = target[i] + 1
-        multi_label[i][:j] = 1
-    return np.array(multi_label)
-
-
-def get_preds(arr, num_cls):
-    """ takes in thresholded predictions (num_samples, num_cls) and returns (num_samples,)
-    [3], arr needs to be a numpy array, NOT torch tensor"""
-    mask = arr == 0
-    # pdb.set_trace()
-    return np.clip(np.where(mask.any(1), mask.argmax(1), num_cls) - 1, 0, num_cls - 1)
-
-
-def predict(X, coef):
-    # [0.15, 2.4, ..] -> [0, 2, ..]
+def predict(X, threshold):
     X_p = np.copy(X)
-    for i, pred in enumerate(X_p):
-        if pred < coef[0]:
-            X_p[i] = 0
-        elif pred >= coef[0] and pred < coef[1]:
-            X_p[i] = 1
-        elif pred >= coef[1] and pred < coef[2]:
-            X_p[i] = 2
-        elif pred >= coef[2] and pred < coef[3]:
-            X_p[i] = 3
-        else:
-            X_p[i] = 4
-    return X_p.astype("int")
+    preds = (X_p > threshold).astype('uint8')
+    return preds
 
 
-def compute_score_inv(thresholds, predictions, targets):
-    predictions = predict(predictions, thresholds)
-    score = cohen_kappa_score(predictions, targets, weights="quadratic")
+def compute_score_inv(threshold, predictions, targets):
+    predictions = predict(predictions, threshold)
+    score = compute_iou_batch(predictions, targets, classes=[1])
     return 1 - score
 
 
@@ -100,53 +56,51 @@ class Meter:
         self.phase = phase
         self.epoch = epoch
         self.save_folder = os.path.join(save_folder, "logs")
-        self.best_thresholds = 0.2
+        self.base_threshold = 0.2
+        self.best_threshold = 0.2
+        self.base_ious = []
 
     def update(self, targets, outputs):
         """targets, outputs are detached CUDA tensors"""
-        # get multi-label to single label
-        # targets = torch.sum(targets, 1) - 1 # no multilabel target in regression
-        #targets = targets.type(torch.LongTensor)
-        #outputs = outputs.flatten()  # [n, 1] -> [n]
-        # outputs = torch.sum((outputs > 0.5), 1) - 1
+        #pdb.set_trace()
+        targets = targets.tolist()
+        outputs = torch.sigmoid(outputs).tolist()
 
-        # pdb.set_trace()
-        self.targets.extend(targets.tolist())
-        self.predictions.extend(outputs.tolist())
-        # self.predictions.extend(torch.argmax(outputs, dim=1).tolist()) #[2]
+        base_preds = predict(outputs, self.base_threshold)
+        iou = compute_iou_batch(outputs, targets, classes=[1])
+        self.base_ious.append(iou)
 
-    def get_best_thresholds(self):
-        """Epoch over, let's get targets in np array [6]"""
-        self.targets = np.array(self.targets)
+        if self.phase == "val": # [10]
+            self.targets.extend(targets)
+            self.predictions.extend(outputs)
 
+    def get_best_threshold(self):
         if self.phase == "train":
-            return self.best_thresholds
+            return self.base_threshold
 
-        """Used in the val phase of iteration, see [4]"""
+        """Used in the val phase of iteration, see [4],
+        Epoch over, let's get targets in np array [6]"""
+        self.targets = np.array(self.targets)
         self.predictions = np.array(self.predictions)
+        #pdb.set_trace()
         simplex = scipy.optimize.minimize(
             compute_score_inv,
-            self.best_thresholds,
+            self.base_threshold,
             args=(self.predictions, self.targets),
             method="nelder-mead",
         )
-        self.best_thresholds = simplex["x"]
-        print("Best thresholds: %s" % self.best_thresholds)
-        return self.best_thresholds
+        self.best_threshold = simplex["x"][0]
+        print("Best threshold: %s" % self.best_threshold)
+        return self.best_threshold
 
-    def get_cm(self):
-        # pdb.set_trace()
-        best_preds = predict(self.predictions, self.best_thresholds)
-        best_qwk = cohen_kappa_score(self.targets, best_preds, weights="quadratic")
+    def get_ious(self):
+        #pdb.set_trace()
+        base_iou = np.nanmean(self.base_ious)
+        best_iou = base_iou
         if self.phase == "val":
-            base_th = [0.5, 1.5, 2.5, 3.5]
-            base_preds = predict(self.predictions, base_th)
-            base_qwk = cohen_kappa_score(self.targets, base_preds, weights="quadratic")
-        else:
-            base_qwk = best_qwk # [9]
-
-        cm = CM(self.targets, best_preds) # Note: `best_preds` for CM
-        return cm, best_qwk, base_qwk
+            best_preds = predict(self.predictions, self.best_threshold)
+            best_iou = compute_iou_batch(best_preds, self.targets, classes=[1])
+        return best_iou, base_iou
 
 
 def plot_ROC(roc, targets, predictions, phase, epoch, folder):
@@ -197,33 +151,52 @@ def iter_log(log, phase, epoch, iteration, epoch_size, loss, start):
 
 def epoch_log(log, tb, phase, epoch, epoch_loss, meter, start):
     diff = time.time() - start
-    #cm, best_qwk, base_qwk = meter.get_cm()
-    #acc = cm.overall_stat["Overall ACC"]
-    #tpr = cm.overall_stat["TPR Macro"]  # [7]
-    #ppv = cm.overall_stat["PPV Macro"]
-    #cls_tpr = cm.class_stat["TPR"]
-    #cls_ppv = cm.class_stat["PPV"]
+    best_iou, base_iou = meter.get_ious()
 
-    #print()
-    #tpr = 0 if tpr is "None" else tpr  # [8]
-    #ppv = 0 if ppv is "None" else ppv
-
-    log("%s %d | loss: %0.4f \n" % (phase, epoch, epoch_loss))
+    log("%s %d | loss: %0.4f | best/base ious: %0.4f/%0.4f\n"
+            % (phase, epoch, epoch_loss, best_iou, base_iou))
     log("Time taken for %s phase: %02d:%02d \n", phase, diff // 60, diff % 60)
 
     # tensorboard
     logger = tb[phase]
     logger.log_value("loss", epoch_loss, epoch)
-
-    # save pycm confusion
-    #obj_path = os.path.join(meter.save_folder, f"cm{phase}_{epoch}")
-    #cm.save(obj_path, best_qwk, base_qwk, epoch_loss, save_stat=True, save_vector=True)
+    logger.log_value("best_iou", best_iou, epoch)
+    logger.log_value("base_iou", base_iou, epoch)
 
     return None
 
 def mkdir(folder):
     if not os.path.exists(folder):
         os.mkdir(folder)
+
+
+def compute_ious(pred, label, classes, ignore_index=255, only_present=True):
+    '''
+    `classes` is a list of class labels, ignore background class i.e., 0
+    example classes=[1, 2]
+    '''
+    pred[label == ignore_index] = 0
+    ious = []
+    for c in classes:
+        label_c = label == c
+        if only_present and np.sum(label_c) == 0:
+            ious.append(np.nan)
+            continue
+        pred_c = pred == c
+        intersection = np.logical_and(pred_c, label_c).sum()
+        union = np.logical_or(pred_c, label_c).sum()
+        if union != 0:
+            ious.append(intersection / union)
+    return ious if ious else [1]
+
+
+def compute_iou_batch(outputs, labels, classes=None):
+    ious = []
+    preds = np.copy(outputs) # copy is imp
+    for pred, label in zip(preds, labels):
+        ious.append(np.nanmean(compute_ious(pred, label, classes)))
+    iou = np.nanmean(ious)
+    return iou
 
 
 def save_hyperparameters(trainer, remark):
@@ -253,7 +226,6 @@ def save_hyperparameters(trainer, remark):
         + f"mean: {trainer.mean}\n"
         + f"std: {trainer.std}\n"
         + f"start_epoch: {trainer.start_epoch}\n"
-        + f"batchsize: {trainer.batch_size}\n"
         + f"augmentations: {augmentations}\n"
         + f"criterion: {trainer.criterion}\n"
         + f"optimizer: {trainer.optimizer}\n"
@@ -300,4 +272,6 @@ It can be argued ki why are we using 0.5 for train, then, well we used 0.5 for b
 [8]: sometimes initial values may come as "None" (str)
 
 [9]: I'm using base th for train phase, so base_qwk and best_qwk are same for train phase, helps in comparing the base_qwk and best_qwk of val phase with the train one, didn't find a way to plot base_qwk of train with best and base of val on a single plot.
+
+[10]: gives mem overflow for storing all predictions in training set.
 """

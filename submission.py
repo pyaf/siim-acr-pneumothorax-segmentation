@@ -17,7 +17,8 @@ from torchvision.datasets.folder import pil_loader
 import torch.utils.data as data
 from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.metrics import cohen_kappa_score
-from models import Model, get_model
+from PIL import Image
+from models import get_model
 from utils import *
 from image_utils import *
 
@@ -40,7 +41,7 @@ class TestDataset(data.Dataset):
     def __init__(self, root, df, size, mean, std, tta=4):
         self.root = root
         self.size = size
-        self.fnames = list(df["id_code"])
+        self.fnames = list(df["ImageId"])
         self.num_samples = len(self.fnames)
         self.tta = tta
         self.TTA = albumentations.Compose(
@@ -62,10 +63,8 @@ class TestDataset(data.Dataset):
     def __getitem__(self, idx):
         fname = self.fnames[idx]
         path = os.path.join(self.root, fname + ".png")
-        # image = load_image(path, size)
-        # image = load_ben_gray(path)
-        image = load_ben_color(path, size=self.size, crop=True)
-
+        image = Image.open(path).convert("RGB")
+        image = np.asarray(image)
         images = [self.transform(image=image)["image"]]
         for _ in range(self.tta):  # perform ttas
             aug_img = self.TTA(image=image)["image"]
@@ -85,10 +84,10 @@ def get_predictions(model, testset, tta):
         if tta:
             # images.shape [n, 3, 96, 96] where n is num of 1+tta
             for images in batch:
-                preds = model(images.to(device))  # [n, num_classes]
+                preds = torch.sigmoid(model(images.to(device)))  # [n, num_classes]
                 predictions.append(preds.mean(dim=0).detach().tolist())
         else:
-            preds = model(batch[:, 0].to(device))
+            preds = torch.sigmoid(model(batch[:, 0].to(device)))
             preds = preds.detach().tolist()  # [1]
             predictions.extend(preds)
 
@@ -99,9 +98,23 @@ def get_model_name_fold(ckpt_path):
     # example ckpt_path = weights/9-7_{modelname}_fold0_text/ckpt12.pth
     model_folder = ckpt_path.split("/")[1]  # 9-7_{modelname}_fold0_text
     model_name = "_".join(model_folder.split("_")[1:-2])  # modelname
-    fold = model_folder.split("_")[-2]  # fold0
-    fold = fold.split("fold")[-1]  # 0
+    fold = model_folder.split("_")[-2][1:]  # f0 -> 0
     return model_name, int(fold)
+
+
+def post_process(probability, threshold, min_size):
+
+    mask = cv2.threshold(probability, threshold, 1, cv2.THRESH_BINARY)[1]
+    num_component, component = cv2.connectedComponents(mask.astype(np.uint8))
+
+    predict = np.zeros((1024, 1024), np.float32)
+    num = 0
+    for c in range(1, num_component):
+        p = (component == c)
+        if p.sum() > min_size:
+            predict[p] = 1
+            num += 1
+    return predict, num
 
 
 if __name__ == "__main__":
@@ -120,14 +133,14 @@ if __name__ == "__main__":
         sample_submission_path = "data/train.csv"
 
     sub_path = ckpt_path.replace(".pth", f"{predict_on}.csv")
-    tta = 4  # number of augs in tta
+    tta = 0  # number of augs in tta
 
-    root = f"data/{predict_on}_images/"
+    root = f"data/{predict_on}_png/"
     size = 256
-    mean = (0.485, 0.456, 0.406)
-    std = (0.229, 0.224, 0.225)
-    # mean = (0, 0, 0)
-    # std = (1, 1, 1)
+    #mean = (0.485, 0.456, 0.406)
+    #std = (0.229, 0.224, 0.225)
+    mean = (0, 0, 0)
+    std = (1, 1, 1)
     use_cuda = True
     num_classes = 1
     num_workers = 8
@@ -148,7 +161,7 @@ if __name__ == "__main__":
         pin_memory=True if use_cuda else False,
     )
 
-    model = get_model(model_name, num_classes, pretrained=None)
+    model = get_model(model_name, num_classes)
     model.to(device)
     model.eval()
 
@@ -159,16 +172,34 @@ if __name__ == "__main__":
 
     state = torch.load(ckpt_path, map_location=lambda storage, loc: storage)
     model.load_state_dict(state["state_dict"])
-    best_thresholds = state["best_thresholds"]
-    print(f"Best thresholds: {best_thresholds}")
+    best_threshold = state["best_threshold"]
+    print(f"Best threshold: {best_threshold}")
     preds = get_predictions(model, testset, tta)
 
-    pred_labels = predict(preds, best_thresholds)
-    print(np.unique(pred_labels, return_counts=True))
-    pdb.set_trace()
-    df.loc[:, "diagnosis"] = pred_labels
+    preds = predict(preds, best_threshold)
+    image_id = df['ImageId'].values
+    num_test = len(image_id)
+    encoded_pixel = []
+    for b in range(num_test):
+        probability = preds[b, 0]
+        if probability.shape != (1024, 1024):
+            probability = cv2.resize(probability, dsize=(
+                1024, 1024), interpolation=cv2.INTER_LINEAR)
+
+        predict, num_predict = post_process(
+            probability, best_threshold, 0)
+
+        if num_predict == 0:
+            encoded_pixel.append('-1')
+        else:
+            r = run_length_encode(predict)
+            encoded_pixel.append(r)
+
+    df = pd.DataFrame(list(zip(image_id, encoded_pixel)),
+                      columns=['ImageId', 'EncodedPixels'])
+    df.to_csv(sub_path, columns=['ImageId', 'EncodedPixels'], index=False)
+
     print(f"Saving predictions at {sub_path}")
-    df.to_csv(sub_path, index=False)
     print("Predictions saved!")
 
 
