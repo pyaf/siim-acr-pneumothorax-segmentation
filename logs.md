@@ -18,6 +18,15 @@ BCEWithLogitsLoss has reduction="mean" the loss returned is mean of all elements
 
 Study unet original architecture, compare it with your model.
 
+Trainer.size was set to 224 -_-, i wasn't using albu's resize anyway :D
+
+*_with_logits means don't use sigmoid ouputs, it'll take care of it.
+Logits are interpreted to be the unnormalised (or not-yet normalised) predictions (or outputs) of a model.
+
+
+Model is learning now, there were two issues, the output image from the dataloader was normalized two times, 1 by explicit division by 255.0, 2 by AT.ToTensor.
+other issue which was unncessary was sigmoid input to loss with logits.
+
 
 
 

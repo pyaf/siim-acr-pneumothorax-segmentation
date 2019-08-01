@@ -58,8 +58,8 @@ class Meter:
         self.phase = phase
         self.epoch = epoch
         self.save_folder = os.path.join(save_folder, "logs")
-        self.base_threshold = 0.5
-        self.best_threshold = 0.5
+        self.base_threshold = 0.7
+        self.best_threshold = 0.7
         self.base_dice_scores = []
 
     def update(self, targets, outputs):
@@ -154,9 +154,9 @@ def epoch_log(log, tb, phase, epoch, epoch_loss, meter, start):
     diff = time.time() - start
     best_dice, base_dice = meter.get_metrics()
 
-    log("%s %d | loss: %0.4f | best/base dice: %0.4f/%0.4f\n"
-            % (phase, epoch, epoch_loss, best_dice, base_dice))
-    log("Time taken for %s phase: %02d:%02d \n", phase, diff // 60, diff % 60)
+    log("best/base dice: %0.4f/%0.4f"
+            % (best_dice, base_dice))
+    #log("Time taken for %s phase: %02d:%02d", phase, diff // 60, diff % 60)
 
     # tensorboard
     logger = tb[phase]

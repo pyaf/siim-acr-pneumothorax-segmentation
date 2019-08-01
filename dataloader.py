@@ -42,7 +42,7 @@ class SIIMDataset(Dataset):
         mask = np.load(mask_path)
 
         augmented = self.transforms(image=img, mask=mask)
-        img = augmented['image'] / 255.0
+        img = augmented['image']# / 255.0
         mask = augmented['mask']
 
         target = {}
@@ -75,7 +75,6 @@ def get_transforms(phase, size, mean, std):
         )
     list_transforms.extend(
         [
-
             #albumentations.Normalize(mean=mean, std=std, p=1),
             #albumentations.Resize(size, size),
             AT.ToTensor(),  # [6]
@@ -84,7 +83,7 @@ def get_transforms(phase, size, mean, std):
     return albumentations.Compose(list_transforms)
 
 
-def get_sampler(df, class_weights=[1, 3]):
+def get_sampler(df, class_weights=[1, 1]):
     dataset_weights = [class_weights[idx] for idx in df['has_mask']]
     datasampler = sampler.WeightedRandomSampler(dataset_weights, len(df))
     return datasampler
@@ -106,7 +105,10 @@ def provider(
 ):
     df = pd.read_csv(df_path)
     df = df.drop_duplicates('ImageId')
-    #print(df.shape)
+    #df_with_mask = df.query('has_mask == 1')
+    #df_without_mask = df.query('has_mask==0')
+    #df_wom_sampled = df_without_mask.sample(len(df_with_mask))
+    #df = pd.concat([df_with_mask, df_wom_sampled])
 
     kfold = StratifiedKFold(total_folds, shuffle=True, random_state=69)
     train_idx, val_idx = list(kfold.split(

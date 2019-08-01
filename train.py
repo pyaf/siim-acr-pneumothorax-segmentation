@@ -35,12 +35,12 @@ date = "%s%s" % (now.day, now.month)
 class Trainer(object):
     def __init__(self):
         # remark = open("remark.txt", "r").read()
-        remark = ""
+        remark = "all images, with cw 1, 3, base_th = 0.7"
         self.fold = 1
         self.total_folds = 7
         self.class_weights = None #[1, 1, 1, 1, 1.3]
         self.model_name = "UNet"
-        ext_text = "test"
+        ext_text = "all"
         self.num_samples = None  # 5000
         self.folder = f"weights/{date}_{self.model_name}_f{self.fold}_{ext_text}"
         self.resume = False
@@ -57,7 +57,7 @@ class Trainer(object):
         # self.base_lr = self.top_lr * 0.001
         self.base_lr = None
         self.momentum = 0.95
-        self.size = 224
+        self.size = 256
         #self.mean = (0.485, 0.456, 0.406)
         #self.std = (0.229, 0.224, 0.225)
         self.mean = (0, 0, 0)
@@ -169,7 +169,6 @@ class Trainer(object):
         images = images.to(self.device)
         masks = targets['masks'].to(self.device)
         outputs = self.net(images)
-        outputs = torch.sigmoid(outputs)
         #loss = self.criterion(outputs.flatten(), masks.flatten())
         loss = self.criterion(outputs, masks)
         return loss, outputs
@@ -195,6 +194,7 @@ class Trainer(object):
                 # loss.backward()
                 self.optimizer.step()
             running_loss += loss.item()
+            outputs = torch.sigmoid(outputs)
             meter.update(targets['masks'], outputs.detach())
             #pdb.set_trace()
             tk0.set_postfix(loss=(running_loss / ((iteration + 1) * batch_size)))
@@ -236,9 +236,10 @@ class Trainer(object):
                 self.ckpt_path, os.path.join(
                     self.save_folder, "ckpt%d.pth" % epoch)
             )
-            print_time(self.log, t_epoch_start, "Time taken by the epoch")
+            #print_time(self.log, t_epoch_start, "Time taken by the epoch")
             print_time(self.log, t0, "Total time taken so far")
-            self.log("\n" + "=" * 60 + "\n")
+            print()
+            #self.log("\n" + "=" * 60 + "\n")
 
 
 if __name__ == "__main__":

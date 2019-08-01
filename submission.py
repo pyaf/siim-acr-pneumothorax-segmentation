@@ -21,7 +21,10 @@ from PIL import Image
 from models import get_model
 from utils import *
 from image_utils import *
+from mask_functions import *
 
+import warnings
+warnings.filterwarnings("ignore")
 
 def get_parser():
     parser = ArgumentParser()
@@ -54,8 +57,8 @@ class TestDataset(data.Dataset):
         )
         self.transform = albumentations.Compose(
             [
-                albumentations.Normalize(mean=mean, std=std, p=1),
-                albumentations.Resize(size, size),
+                #albumentations.Normalize(mean=mean, std=std, p=1),
+                #albumentations.Resize(size, size),
                 AT.ToTensor(),
             ]
         )
@@ -63,8 +66,9 @@ class TestDataset(data.Dataset):
     def __getitem__(self, idx):
         fname = self.fnames[idx]
         path = os.path.join(self.root, fname + ".png")
-        image = Image.open(path).convert("RGB")
-        image = np.asarray(image)
+        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        image = cv2.resize(image, (self.size, self.size))
+        image = np.expand_dims(image, -1)
         images = [self.transform(image=image)["image"]]
         for _ in range(self.tta):  # perform ttas
             aug_img = self.TTA(image=image)["image"]
@@ -87,6 +91,7 @@ def get_predictions(model, testset, tta):
                 preds = torch.sigmoid(model(images.to(device)))  # [n, num_classes]
                 predictions.append(preds.mean(dim=0).detach().tolist())
         else:
+            #pdb.set_trace()
             preds = torch.sigmoid(model(batch[:, 0].to(device)))
             preds = preds.detach().tolist()  # [1]
             predictions.extend(preds)
@@ -173,9 +178,10 @@ if __name__ == "__main__":
     state = torch.load(ckpt_path, map_location=lambda storage, loc: storage)
     model.load_state_dict(state["state_dict"])
     best_threshold = state["best_threshold"]
+    best_threshold = 0.6
     print(f"Best threshold: {best_threshold}")
     preds = get_predictions(model, testset, tta)
-
+    pdb.set_trace()
     preds = predict(preds, best_threshold)
     image_id = df['ImageId'].values
     num_test = len(image_id)

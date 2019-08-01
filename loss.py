@@ -26,8 +26,9 @@ def criterion(logit, truth):
     if 1:
         pos = (truth > 0.5).float()
         neg = (truth < 0.5).float()
-        pos_weight = pos.sum().item() + 1e-12
-        neg_weight = neg.sum().item() + 1e-12
-        loss = (0.25*pos*loss/pos_weight + 0.75*neg*loss/neg_weight).sum()
+        pos_weight = pos.sum().item() + 1e-12 # pos count
+        neg_weight = neg.sum().item() + 1e-12 # neg count
+        #loss = (0.25*pos*loss/pos_weight + 0.75*neg*loss/neg_weight).sum()
+        loss = (0.9*pos*loss/pos_weight + 0.1*neg*loss/neg_weight).sum()
 
     return loss
