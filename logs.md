@@ -8,6 +8,21 @@ https://github.com/qubvel/segmentation_models
 
 * 5e-4 is too high for lr *
 
+
+### 1 Aug
+
+The UNet model which I was using so far didn't had BN layers. Now, using a new model looks like its working,
+
+*BUG* len(dataloader) returns total batches not total images.
+BCEWithLogitsLoss has reduction="mean" the loss returned is mean of all elements in outputs, here total number of pixels
+
+Study unet original architecture, compare it with your model.
+
+
+
+
+
+
 # Questions and Ideas:
 
 # TODO:

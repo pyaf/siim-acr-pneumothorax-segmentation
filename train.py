@@ -16,10 +16,11 @@ from collections import defaultdict
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from tensorboard_logger import Logger
-from utils import *
 from dataloader import provider
 from shutil import copyfile
 from models import get_model
+from utils import *
+from loss import WBCE, criterion
 
 seed_pytorch()
 
@@ -48,7 +49,7 @@ class Trainer(object):
         self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
         self.train_df_name = "train.csv"
         self.num_workers = 12
-        self.batch_size = {"train": 16, "val": 8}
+        self.batch_size = {"train": 24, "val": 8}
         self.num_classes = 1
         self.top_lr = 5e-4
         self.ep2unfreeze = 0
@@ -80,7 +81,8 @@ class Trainer(object):
         torch.set_default_tensor_type(self.tensor_type)
         self.net = get_model(self.model_name, self.num_classes)
         #self.criterion = torch.nn.BCELoss() # requires sigmoid pred inputs
-        self.criterion = torch.nn.BCEWithLogitsLoss()
+        #self.criterion = torch.nn.BCEWithLogitsLoss()
+        self.criterion = criterion
         self.optimizer = optim.Adam(self.net.parameters(), lr=self.top_lr)
         # self.optimizer = optim.SGD(
         #    [
@@ -165,13 +167,11 @@ class Trainer(object):
     def forward(self, images, targets):
         # pdb.set_trace()
         images = images.to(self.device)
-        # targets = targets.type(torch.LongTensor).to(self.device) # [1]
-        #targets = targets.type(torch.FloatTensor).to(self.device)
         masks = targets['masks'].to(self.device)
-        #targets = targets.view(-1, 1)  # [n] -> [n, 1] V. imp for MSELoss
         outputs = self.net(images)
-        #pdb.set_trace()
-        loss = self.criterion(outputs.flatten(), masks.flatten())
+        outputs = torch.sigmoid(outputs)
+        #loss = self.criterion(outputs.flatten(), masks.flatten())
+        loss = self.criterion(outputs, masks)
         return loss, outputs
 
     def iterate(self, epoch, phase):
@@ -182,8 +182,8 @@ class Trainer(object):
         self.net.train(phase == "train")
         dataloader = self.dataloaders[phase]
         running_loss = 0.0
-        total_images = len(dataloader)
-        tk0 = tqdm(dataloader, total=total_images)
+        total_batches = len(dataloader) # [5]
+        tk0 = tqdm(dataloader, total=total_batches)
         for iteration, batch in enumerate(tk0):
             images, targets = batch
             # pdb.set_trace()
@@ -195,15 +195,11 @@ class Trainer(object):
                 # loss.backward()
                 self.optimizer.step()
             running_loss += loss.item()
-            # pdb.set_trace()
-            outputs = torch.sigmoid(outputs)
             meter.update(targets['masks'], outputs.detach())
+            #pdb.set_trace()
             tk0.set_postfix(loss=(running_loss / ((iteration + 1) * batch_size)))
-            #if iteration % 100 == 0:
-            #    iter_log(self.log, phase, epoch, iteration,
-            #             total_iters, loss, start)
         best_threshold = meter.get_best_threshold()
-        epoch_loss = running_loss / total_images
+        epoch_loss = running_loss / (total_batches * batch_size)
         epoch_log(self.log, self.tb, phase,
                         epoch, epoch_loss, meter, start)
         torch.cuda.empty_cache()
@@ -259,4 +255,7 @@ LongTensor, BCELoss expects targets to be FloatTensor
 [3]: one tensorboard logger for train and val each, in same folder, so that we can see plots on the same graph
 
 [4]: if pretrained is true, a model state from self.pretrained path will be loaded, if self.resume is true, self.resume_path will be loaded, both are true, self.resume_path will be loaded
+
+[5]: len(dataloader) returns total batches, if datasampler doesn't contain more than dataset.__len__() indices.
 """
+

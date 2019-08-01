@@ -18,6 +18,8 @@ from albumentations import torch as AT
 from mask_functions import *
 
 
+HOME = os.path.abspath(os.path.dirname(__file__))
+
 class SIIMDataset(Dataset):
     def __init__(self, df, data_folder, size, mean, std, phase):
         self.df = df
@@ -28,9 +30,8 @@ class SIIMDataset(Dataset):
         self.phase = phase
         self.transforms = get_transforms(phase, size, mean, std)
 
-        self.df = self.df.drop_duplicates('ImageId')
         self.fnames = self.df['ImageId'].tolist()
-        self.labels = (self.df['EncodedPixels'] != '-1').values.astype(np.int32)
+        self.labels = self.df['has_mask'].values.astype(np.int32) # [12]
 
     def __getitem__(self, idx):
         image_id = self.fnames[idx]
@@ -51,7 +52,7 @@ class SIIMDataset(Dataset):
         return img, target
 
     def __len__(self):
-        #return 100
+        #return 10
         return len(self.fnames)
 
 
@@ -83,6 +84,12 @@ def get_transforms(phase, size, mean, std):
     return albumentations.Compose(list_transforms)
 
 
+def get_sampler(df, class_weights=[1, 3]):
+    dataset_weights = [class_weights[idx] for idx in df['has_mask']]
+    datasampler = sampler.WeightedRandomSampler(dataset_weights, len(df))
+    return datasampler
+
+
 def provider(
     fold,
     total_folds,
@@ -98,17 +105,18 @@ def provider(
     num_samples=4000,
 ):
     df = pd.read_csv(df_path)
-    HOME = os.path.abspath(os.path.dirname(__file__))
+    df = df.drop_duplicates('ImageId')
+    #print(df.shape)
 
     kfold = StratifiedKFold(total_folds, shuffle=True, random_state=69)
     train_idx, val_idx = list(kfold.split(
         df["ImageId"], df["has_mask"]))[fold]
     train_df, val_df = df.iloc[train_idx], df.iloc[val_idx]
-
     df = train_df if phase == "train" else val_df
-
+    #print(df.shape)
     image_dataset = SIIMDataset(df, images_folder, size, mean, std, phase)
-    datasampler = None
+    datasampler = get_sampler(df, [1, 3])
+    #datasampler = None
     dataloader = DataLoader(
         image_dataset,
         batch_size=batch_size,
@@ -127,7 +135,7 @@ if __name__ == "__main__":
     start = time.time()
     phase = "train"
     #phase = "val"
-    num_workers = 12
+    num_workers = 0
     fold = 0
     total_folds = 5
     mean = (0.485, 0.456, 0.406)
@@ -193,4 +201,5 @@ https://github.com/btgraham/SparseConvNet/tree/kaggle_Diabetic_Retinopathy_compe
 [6]: albumentations.Normalize will divide by 255, subtract mean and divide by std. output dtype = float32. ToTensor converts to torch tensor and divides by 255 if input dtype is uint8.
 [7]: indices of hard examples, evaluated using 0.81 scoring model.
 [10]: albumentation's ToTensor supports (w, h) images, no grayscale, so (w, h, 1). IMP: It doesn't give any warning, returns transposed image (weird, yeah)
+[12], .tolist() gives CUDA initialization error, it needs to be in numpy array with np.int32 dtype to avoid it.
 """

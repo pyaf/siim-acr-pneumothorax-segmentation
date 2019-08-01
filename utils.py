@@ -44,6 +44,7 @@ def predict(X, threshold):
 
 
 def compute_score_inv(threshold, predictions, targets):
+    #pdb.set_trace()
     predictions = predict(predictions, threshold)
     #score = compute_iou_batch(predictions, targets, classes=[1])
     score = compute_dice(predictions, targets)
@@ -199,8 +200,9 @@ def compute_iou_batch(outputs, labels, classes=None):
     return iou
 
 
-def compute_dice(outputs, target):
+def compute_dice(preds, target):
     eps = 0.0001
+    outputs = np.copy(preds) # IMP
     inter = np.sum(outputs * target)
     union = np.sum(outputs) + np.sum(target) + eps
     t = (2 * inter + eps) / union
