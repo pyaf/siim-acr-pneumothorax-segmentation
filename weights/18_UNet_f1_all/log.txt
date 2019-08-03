@@ -84,3 +84,255 @@
 16:43:39 Total time taken so far: 54:19
 16:43:39 Starting epoch: 15 | phase: train 
 16:46:45 Starting epoch: 0 | phase: train 
+16:50:03 best/base dice: 0.0142/0.0142
+16:50:03 Starting epoch: 0 | phase: val 
+16:50:36 best/base dice: 0.0728/0.0138
+16:50:37 ******** New optimal found, saving state ********
+16:50:40 Total time taken so far: 03:54
+16:50:40 Starting epoch: 1 | phase: train 
+16:53:44 best/base dice: 0.0145/0.0145
+16:53:44 Starting epoch: 1 | phase: val 
+16:54:14 best/base dice: 0.0411/0.0133
+16:54:15 ******** New optimal found, saving state ********
+16:54:17 Total time taken so far: 07:31
+16:54:17 Starting epoch: 2 | phase: train 
+16:57:21 best/base dice: 0.0148/0.0148
+16:57:21 Starting epoch: 2 | phase: val 
+16:57:51 best/base dice: 0.0557/0.0151
+16:57:51 ******** New optimal found, saving state ********
+16:57:54 Total time taken so far: 11:08
+16:57:54 Starting epoch: 3 | phase: train 
+17:00:58 best/base dice: 0.0148/0.0148
+17:00:58 Starting epoch: 3 | phase: val 
+17:01:29 best/base dice: 0.0332/0.0148
+17:01:30 ******** New optimal found, saving state ********
+17:01:32 Total time taken so far: 14:46
+17:01:32 Starting epoch: 4 | phase: train 
+17:04:36 best/base dice: 0.0148/0.0148
+17:04:36 Starting epoch: 4 | phase: val 
+17:05:07 best/base dice: 0.0299/0.0139
+17:05:09 Total time taken so far: 18:23
+17:05:09 Starting epoch: 5 | phase: train 
+17:08:13 best/base dice: 0.0153/0.0153
+17:08:13 Starting epoch: 5 | phase: val 
+17:08:43 best/base dice: 0.0326/0.0154
+17:08:44 ******** New optimal found, saving state ********
+17:08:46 Total time taken so far: 22:00
+17:08:46 Starting epoch: 6 | phase: train 
+17:11:51 best/base dice: 0.0152/0.0152
+17:11:51 Starting epoch: 6 | phase: val 
+17:12:22 best/base dice: 0.0410/0.0171
+17:12:24 Total time taken so far: 25:38
+17:12:24 Starting epoch: 7 | phase: train 
+17:15:28 best/base dice: 0.0154/0.0154
+17:15:28 Starting epoch: 7 | phase: val 
+17:15:57 best/base dice: 0.0323/0.0147
+17:16:00 Total time taken so far: 29:14
+17:16:00 Starting epoch: 8 | phase: train 
+17:16:28 Starting epoch: 0 | phase: train 
+17:19:45 best/base dice: 0.0180/0.0180
+17:19:45 Starting epoch: 0 | phase: val 
+17:20:25 best/base dice: 0.0874/0.0147
+17:20:26 ******** New optimal found, saving state ********
+17:20:28 Total time taken so far: 04:00
+17:20:28 Starting epoch: 1 | phase: train 
+17:23:32 best/base dice: 0.0188/0.0188
+17:23:32 Starting epoch: 1 | phase: val 
+17:24:07 best/base dice: 0.0880/0.0179
+17:24:08 ******** New optimal found, saving state ********
+17:24:11 Total time taken so far: 07:43
+17:24:11 Starting epoch: 2 | phase: train 
+17:27:15 best/base dice: 0.0204/0.0204
+17:27:15 Starting epoch: 2 | phase: val 
+17:27:48 best/base dice: 0.1183/0.0177
+17:27:50 Total time taken so far: 11:22
+17:27:50 Starting epoch: 3 | phase: train 
+17:30:54 best/base dice: 0.0219/0.0219
+17:30:54 Starting epoch: 3 | phase: val 
+17:31:26 best/base dice: 0.1064/0.0214
+17:31:27 ******** New optimal found, saving state ********
+17:31:30 Total time taken so far: 15:02
+17:31:30 Starting epoch: 4 | phase: train 
+17:34:34 best/base dice: 0.0211/0.0211
+17:34:34 Starting epoch: 4 | phase: val 
+17:35:09 best/base dice: 0.1550/0.0199
+17:35:10 ******** New optimal found, saving state ********
+17:35:13 Total time taken so far: 18:45
+17:35:13 Starting epoch: 5 | phase: train 
+17:38:17 best/base dice: 0.0240/0.0240
+17:38:17 Starting epoch: 5 | phase: val 
+17:38:50 best/base dice: 0.1717/0.0233
+17:38:50 ******** New optimal found, saving state ********
+17:38:53 Total time taken so far: 22:25
+17:38:53 Starting epoch: 6 | phase: train 
+17:41:57 best/base dice: 0.0253/0.0253
+17:41:57 Starting epoch: 6 | phase: val 
+17:42:32 best/base dice: 0.1708/0.0277
+17:42:35 Total time taken so far: 26:06
+17:42:35 Starting epoch: 7 | phase: train 
+17:45:38 best/base dice: 0.0273/0.0273
+17:45:38 Starting epoch: 7 | phase: val 
+17:46:12 best/base dice: 0.1968/0.0289
+17:46:14 Total time taken so far: 29:46
+17:46:14 Starting epoch: 8 | phase: train 
+17:49:18 best/base dice: 0.0283/0.0283
+17:49:18 Starting epoch: 8 | phase: val 
+17:49:51 best/base dice: 0.1949/0.0311
+17:49:52 ******** New optimal found, saving state ********
+17:49:55 Total time taken so far: 33:27
+17:49:55 Starting epoch: 9 | phase: train 
+17:52:59 best/base dice: 0.0315/0.0315
+17:52:59 Starting epoch: 9 | phase: val 
+17:53:33 best/base dice: 0.2292/0.0333
+17:53:34 ******** New optimal found, saving state ********
+17:53:36 Total time taken so far: 37:08
+17:53:36 Starting epoch: 10 | phase: train 
+17:56:42 best/base dice: 0.0313/0.0313
+17:56:42 Starting epoch: 10 | phase: val 
+17:57:17 best/base dice: 0.2465/0.0341
+17:57:18 ******** New optimal found, saving state ********
+17:57:21 Total time taken so far: 40:53
+17:57:21 Starting epoch: 11 | phase: train 
+18:00:25 best/base dice: 0.0317/0.0317
+18:00:25 Starting epoch: 11 | phase: val 
+18:01:00 best/base dice: 0.1741/0.0329
+18:01:02 Total time taken so far: 44:34
+18:01:02 Starting epoch: 12 | phase: train 
+18:04:06 best/base dice: 0.0320/0.0320
+18:04:06 Starting epoch: 12 | phase: val 
+18:04:38 best/base dice: 0.2123/0.0423
+18:04:41 Total time taken so far: 48:13
+18:04:41 Starting epoch: 13 | phase: train 
+18:07:45 best/base dice: 0.0360/0.0360
+18:07:45 Starting epoch: 13 | phase: val 
+18:08:18 best/base dice: 0.2739/0.0427
+18:08:21 Total time taken so far: 51:53
+18:08:21 Starting epoch: 14 | phase: train 
+18:11:24 best/base dice: 0.0350/0.0350
+18:11:24 Starting epoch: 14 | phase: val 
+18:11:57 best/base dice: 0.2274/0.0284
+18:11:59 Total time taken so far: 55:31
+18:11:59 Starting epoch: 15 | phase: train 
+18:15:03 best/base dice: 0.0373/0.0373
+18:15:03 Starting epoch: 15 | phase: val 
+18:15:35 best/base dice: 0.2799/0.0404
+18:15:37 ******** New optimal found, saving state ********
+18:15:39 Total time taken so far: 59:10
+18:15:39 Starting epoch: 16 | phase: train 
+18:18:42 best/base dice: 0.0384/0.0384
+18:18:42 Starting epoch: 16 | phase: val 
+18:19:13 best/base dice: 0.2942/0.0389
+18:19:14 ******** New optimal found, saving state ********
+18:19:15 Total time taken so far: 62:47
+18:19:15 Starting epoch: 17 | phase: train 
+18:22:19 best/base dice: 0.0404/0.0404
+18:22:19 Starting epoch: 17 | phase: val 
+18:22:51 best/base dice: 0.3393/0.0445
+18:22:51 ******** New optimal found, saving state ********
+18:22:53 Total time taken so far: 66:25
+18:22:53 Starting epoch: 18 | phase: train 
+18:25:56 best/base dice: 0.0428/0.0428
+18:25:56 Starting epoch: 18 | phase: val 
+18:26:29 best/base dice: 0.3007/0.0408
+18:26:30 Total time taken so far: 70:01
+18:26:30 Starting epoch: 19 | phase: train 
+18:29:33 best/base dice: 0.0425/0.0425
+18:29:33 Starting epoch: 19 | phase: val 
+18:30:05 best/base dice: 0.3033/0.0457
+18:30:06 Total time taken so far: 73:37
+18:30:06 Starting epoch: 20 | phase: train 
+18:33:09 best/base dice: 0.0450/0.0450
+18:33:09 Starting epoch: 20 | phase: val 
+18:33:40 best/base dice: 0.3272/0.0468
+18:33:41 ******** New optimal found, saving state ********
+18:33:43 Total time taken so far: 77:14
+18:33:43 Starting epoch: 21 | phase: train 
+18:36:46 best/base dice: 0.0447/0.0447
+18:36:46 Starting epoch: 21 | phase: val 
+18:37:20 best/base dice: 0.3492/0.0484
+18:37:21 Total time taken so far: 80:53
+18:37:21 Starting epoch: 22 | phase: train 
+18:40:24 best/base dice: 0.0475/0.0475
+18:40:24 Starting epoch: 22 | phase: val 
+18:40:55 best/base dice: 0.3160/0.0489
+18:40:56 Total time taken so far: 84:28
+18:40:56 Starting epoch: 23 | phase: train 
+18:44:00 best/base dice: 0.0455/0.0455
+18:44:00 Starting epoch: 23 | phase: val 
+18:44:31 best/base dice: 0.3405/0.0466
+18:44:31 Total time taken so far: 88:03
+18:44:31 Starting epoch: 24 | phase: train 
+18:47:35 best/base dice: 0.0450/0.0450
+18:47:35 Starting epoch: 24 | phase: val 
+18:48:06 best/base dice: 0.3208/0.0443
+18:48:07 Total time taken so far: 91:39
+18:48:07 Starting epoch: 25 | phase: train 
+18:51:11 best/base dice: 0.0474/0.0474
+18:51:11 Starting epoch: 25 | phase: val 
+18:51:42 best/base dice: 0.3666/0.0519
+18:51:43 Total time taken so far: 95:15
+18:51:43 Starting epoch: 26 | phase: train 
+18:54:47 best/base dice: 0.0472/0.0472
+18:54:47 Starting epoch: 26 | phase: val 
+18:55:18 best/base dice: 0.3341/0.0468
+18:55:19 Total time taken so far: 98:51
+18:55:19 Starting epoch: 27 | phase: train 
+18:58:23 best/base dice: 0.0472/0.0472
+18:58:23 Starting epoch: 27 | phase: val 
+18:58:57 best/base dice: 0.3424/0.0487
+18:58:58 ******** New optimal found, saving state ********
+18:59:00 Total time taken so far: 102:31
+18:59:00 Starting epoch: 28 | phase: train 
+19:02:03 best/base dice: 0.0474/0.0474
+19:02:03 Starting epoch: 28 | phase: val 
+19:02:35 best/base dice: 0.3508/0.0512
+19:02:36 Total time taken so far: 106:08
+19:02:36 Starting epoch: 29 | phase: train 
+19:05:39 best/base dice: 0.0471/0.0471
+19:05:39 Starting epoch: 29 | phase: val 
+19:06:11 best/base dice: 0.3348/0.0471
+19:06:11 Total time taken so far: 109:43
+19:06:11 Starting epoch: 30 | phase: train 
+19:09:15 best/base dice: 0.0477/0.0477
+19:09:15 Starting epoch: 30 | phase: val 
+19:09:49 best/base dice: 0.3332/0.0505
+19:09:50 Total time taken so far: 113:22
+19:09:50 Starting epoch: 31 | phase: train 
+19:12:54 best/base dice: 0.0465/0.0465
+19:12:54 Starting epoch: 31 | phase: val 
+19:13:25 best/base dice: 0.3296/0.0465
+19:13:26 Total time taken so far: 116:58
+19:13:26 Starting epoch: 32 | phase: train 
+19:16:30 best/base dice: 0.0464/0.0464
+19:16:30 Starting epoch: 32 | phase: val 
+19:17:01 best/base dice: 0.3295/0.0482
+19:17:02 Total time taken so far: 120:34
+19:17:02 Starting epoch: 33 | phase: train 
+19:20:06 best/base dice: 0.0494/0.0494
+19:20:06 Starting epoch: 33 | phase: val 
+19:20:39 best/base dice: 0.3376/0.0503
+19:20:40 Total time taken so far: 124:11
+19:20:40 Starting epoch: 34 | phase: train 
+19:23:43 best/base dice: 0.0473/0.0473
+19:23:43 Starting epoch: 34 | phase: val 
+19:24:16 best/base dice: 0.3521/0.0475
+19:24:17 Total time taken so far: 127:48
+19:24:17 Starting epoch: 35 | phase: train 
+19:27:20 best/base dice: 0.0481/0.0481
+19:27:20 Starting epoch: 35 | phase: val 
+19:27:53 best/base dice: 0.3243/0.0478
+19:27:54 Total time taken so far: 131:26
+19:27:54 Starting epoch: 36 | phase: train 
+19:30:58 best/base dice: 0.0464/0.0464
+19:30:58 Starting epoch: 36 | phase: val 
+19:31:30 best/base dice: 0.3308/0.0516
+19:31:31 Total time taken so far: 135:02
+19:31:31 Starting epoch: 37 | phase: train 
+19:34:34 best/base dice: 0.0459/0.0459
+19:34:34 Starting epoch: 37 | phase: val 
+19:35:08 best/base dice: 0.3216/0.0477
+19:35:09 Total time taken so far: 138:41
+19:35:09 Starting epoch: 38 | phase: train 
+19:59:26 Starting epoch: 0 | phase: train 
+20:02:44 best/base dice: 0.0184/0.0184
+20:02:44 Starting epoch: 0 | phase: val 

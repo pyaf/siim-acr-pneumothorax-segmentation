@@ -20,7 +20,8 @@ from dataloader import provider
 from shutil import copyfile
 from models import get_model
 from utils import *
-from loss import WBCE, criterion
+from extras import *
+from loss import *
 
 seed_pytorch()
 
@@ -37,10 +38,10 @@ class Trainer(object):
         # remark = open("remark.txt", "r").read()
         remark = "all images, with cw 1, 3, base_th = 0.7"
         self.fold = 1
-        self.total_folds = 7
+        self.total_folds = 5
         self.class_weights = None #[1, 1, 1, 1, 1.3]
         self.model_name = "UNet"
-        ext_text = "all"
+        ext_text = "512"
         self.num_samples = None  # 5000
         self.folder = f"weights/{date}_{self.model_name}_f{self.fold}_{ext_text}"
         self.resume = False
@@ -49,20 +50,20 @@ class Trainer(object):
         self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
         self.train_df_name = "train.csv"
         self.num_workers = 12
-        self.batch_size = {"train": 24, "val": 8}
+        self.batch_size = {"train": 16, "val": 8}
+        self.accumulation_steps = 32 // self.batch_size['train']
         self.num_classes = 1
-        self.top_lr = 5e-4
-        self.ep2unfreeze = 0
-        self.num_epochs = 100
+        self.top_lr = 1e-3
+        self.ep2unfreeze = 2 # doesn't matter, will look into smp
+        self.num_epochs = 50
         # self.base_lr = self.top_lr * 0.001
         self.base_lr = None
         self.momentum = 0.95
-        self.size = 256
-        #self.mean = (0.485, 0.456, 0.406)
-        #self.std = (0.229, 0.224, 0.225)
-        self.mean = (0, 0, 0)
-        self.std = (1, 1, 1)
-        # self.epoch_2_lr = {1: 2, 3: 5, 5: 2, 6:5, 7:2, 9:5} # factor to scale base_lr
+        self.size = 512
+        self.mean = (0.485, 0.456, 0.406)
+        self.std = (0.229, 0.224, 0.225)
+        #self.mean = (0, 0, 0)
+        #self.std = (1, 1, 1)
         # self.weight_decay = 5e-4
         self.best_loss = float("inf")
         self.start_epoch = 0
@@ -82,8 +83,11 @@ class Trainer(object):
         self.net = get_model(self.model_name, self.num_classes)
         #self.criterion = torch.nn.BCELoss() # requires sigmoid pred inputs
         #self.criterion = torch.nn.BCEWithLogitsLoss()
-        self.criterion = criterion
+        self.criterion = MixedLoss(10.0, 2.0)
+        #self.criterion = criterion
+        #self.criterion = DiceLoss()
         self.optimizer = optim.Adam(self.net.parameters(), lr=self.top_lr)
+        #self.optimizer = optim.SGD(self.net.parameters(), lr=self.top_lr, momentum=0.9, weight_decay=0.0001)
         # self.optimizer = optim.SGD(
         #    [
         #        {"params": self.net.model.parameters()},
@@ -183,26 +187,28 @@ class Trainer(object):
         running_loss = 0.0
         total_batches = len(dataloader) # [5]
         tk0 = tqdm(dataloader, total=total_batches)
-        for iteration, batch in enumerate(tk0):
+        self.optimizer.zero_grad()
+        for itr, batch in enumerate(tk0):
             images, targets = batch
             # pdb.set_trace()
-            self.optimizer.zero_grad()
             loss, outputs = self.forward(images, targets)
+            loss = loss / self.accumulation_steps
             if phase == "train":
                 with amp.scale_loss(loss, self.optimizer) as scaled_loss:
                     scaled_loss.backward()
-                # loss.backward()
-                self.optimizer.step()
+                if (itr + 1 ) % self.accumulation_steps == 0:
+                    self.optimizer.step()
+                    self.optimizer.zero_grad()
             running_loss += loss.item()
-            outputs = torch.sigmoid(outputs)
-            meter.update(targets['masks'], outputs.detach())
-            #pdb.set_trace()
-            tk0.set_postfix(loss=(running_loss / ((iteration + 1) * batch_size)))
+            outputs = outputs.detach().cpu() # [6]
+            meter.update(targets['masks'], outputs)
+            tk0.set_postfix(loss=(running_loss / ((itr + 1)))) #[7]
         best_threshold = meter.get_best_threshold()
-        epoch_loss = running_loss / (total_batches * batch_size)
-        epoch_log(self.log, self.tb, phase,
+        epoch_loss = running_loss / total_batches
+        epoch_log(self.optimizer, self.log, self.tb, phase,
                         epoch, epoch_loss, meter, start)
         torch.cuda.empty_cache()
+        print('\n')
         return epoch_loss, best_threshold
 
     def train(self):
@@ -238,7 +244,7 @@ class Trainer(object):
             )
             #print_time(self.log, t_epoch_start, "Time taken by the epoch")
             print_time(self.log, t0, "Total time taken so far")
-            print()
+            print('\n\n')
             #self.log("\n" + "=" * 60 + "\n")
 
 
@@ -258,5 +264,10 @@ LongTensor, BCELoss expects targets to be FloatTensor
 [4]: if pretrained is true, a model state from self.pretrained path will be loaded, if self.resume is true, self.resume_path will be loaded, both are true, self.resume_path will be loaded
 
 [5]: len(dataloader) returns total batches, if datasampler doesn't contain more than dataset.__len__() indices.
+
+[6]: detach -> requires_grad = False, but still a CUDA variable
+
+[7]: loss is mean by batch, so no need to divide by all images, just take mean by total batches
 """
+
 

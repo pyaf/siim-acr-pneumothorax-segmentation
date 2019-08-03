@@ -1,9 +1,11 @@
-from .unet_model import *
+#from .unet_model import *
+from .pretrained import *
 
 
 
-def get_model(model_name, num_channels=1, num_classes=1):
+def get_model(model_name, num_classes):
     if model_name == "UNet":
-        return UNet(num_channels, num_classes)
+        return UNet()
+        #return UNet(num_channels, num_classes)
 
 

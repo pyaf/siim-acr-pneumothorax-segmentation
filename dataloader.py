@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader, Dataset, sampler
 from torchvision.datasets.folder import pil_loader
 from sklearn.model_selection import train_test_split, StratifiedKFold
 #from utils import to_multi_label
-import albumentations
+from albumentations import *
 from albumentations import torch as AT
 from mask_functions import *
 
@@ -28,7 +28,7 @@ class SIIMDataset(Dataset):
         self.mean = mean
         self.std = std
         self.phase = phase
-        self.transforms = get_transforms(phase, size, mean, std)
+        self.transforms, self.img_trfms = get_transforms(phase, size, mean, std)
 
         self.fnames = self.df['ImageId'].tolist()
         self.labels = self.df['has_mask'].values.astype(np.int32) # [12]
@@ -36,15 +36,19 @@ class SIIMDataset(Dataset):
     def __getitem__(self, idx):
         image_id = self.fnames[idx]
 
-        image_path = os.path.join(self.root, "npy_train_256",  image_id + '.npy')
-        mask_path = os.path.join(self.root, "npy_masks_256", image_id + '.npy')
+        image_path = os.path.join(self.root, "npy_train_512",  image_id + '.npy')
+        mask_path = os.path.join(self.root, "npy_masks_512", image_id + '.npy')
         img = np.load(image_path)
+        img = np.repeat(img, 3, axis=-1)
         mask = np.load(mask_path)
 
+        #if self.phase == "train":
+        #    img = self.img_trfms(image=img)['image'] # only for RGB
         augmented = self.transforms(image=img, mask=mask)
         img = augmented['image']# / 255.0
         mask = augmented['mask']
-
+        #img = torch.Tensor(img)
+        #mask = torch.Tensor(mask)
         target = {}
         target["labels"] = self.labels[idx]
         target["image_id"] = image_id
@@ -57,31 +61,50 @@ class SIIMDataset(Dataset):
 
 
 def get_transforms(phase, size, mean, std):
-    list_transforms = [
-    ]
+    list_transforms = []
+    img_trfms = []
     if phase == "train":
         list_transforms.extend(
             [
-                albumentations.Transpose(p=0.5),
-                albumentations.Flip(p=0.5),
-                albumentations.ShiftScaleRotate(
+                #Transpose(p=0.5),
+                #Flip(p=0.5),
+                HorizontalFlip(),
+                ShiftScaleRotate(
                     shift_limit=0,  # no resizing
                     scale_limit=0.1,
-                    rotate_limit=120,
+                    rotate_limit=10,
                     p=0.5,
                     border_mode=cv2.BORDER_CONSTANT
                 ),
             ]
         )
+        img_trfms = Compose([
+                OneOf(
+                    [
+                        CLAHE(clip_limit=2),
+                        IAASharpen(),
+                        IAAEmboss(),
+                        RandomBrightnessContrast(),
+                        JpegCompression(),
+                        Blur(),
+                        GaussNoise(),
+                    ],
+                    p=0.5,
+                ),
+        ])
+
+
     list_transforms.extend(
         [
-            #albumentations.Normalize(mean=mean, std=std, p=1),
-            #albumentations.Resize(size, size),
+            Normalize(mean=mean, std=std, p=1),
+            #Resize(size, size),
             AT.ToTensor(),  # [6]
         ]
     )
-    return albumentations.Compose(list_transforms)
 
+    list_trfms = Compose(list_transforms)
+
+    return list_trfms, img_trfms
 
 def get_sampler(df, class_weights=[1, 1]):
     dataset_weights = [class_weights[idx] for idx in df['has_mask']]
@@ -105,11 +128,12 @@ def provider(
 ):
     df = pd.read_csv(df_path)
     df = df.drop_duplicates('ImageId')
-    #df_with_mask = df.query('has_mask == 1')
-    #df_without_mask = df.query('has_mask==0')
-    #df_wom_sampled = df_without_mask.sample(len(df_with_mask))
-    #df = pd.concat([df_with_mask, df_wom_sampled])
-
+    df_with_mask = df.query('has_mask == 1')
+    #df = df_with_mask.copy()
+    df_without_mask = df.query('has_mask==0')
+    df_wom_sampled = df_without_mask.sample(len(df_with_mask))
+    df = pd.concat([df_with_mask, df_wom_sampled])
+    print(df.shape)
     kfold = StratifiedKFold(total_folds, shuffle=True, random_state=69)
     train_idx, val_idx = list(kfold.split(
         df["ImageId"], df["has_mask"]))[fold]
@@ -117,8 +141,8 @@ def provider(
     df = train_df if phase == "train" else val_df
     #print(df.shape)
     image_dataset = SIIMDataset(df, images_folder, size, mean, std, phase)
-    datasampler = get_sampler(df, [1, 3])
-    #datasampler = None
+    #datasampler = get_sampler(df, [1, 1])
+    datasampler = None
     dataloader = DataLoader(
         image_dataset,
         batch_size=batch_size,
@@ -126,6 +150,7 @@ def provider(
         pin_memory=True,
         shuffle=False if datasampler else True,
         sampler=datasampler,
+        #collate_fn=collate_fn
     )  # shuffle and sampler are mutually exclusive args
 
     #print(f'len(dataloader): {len(dataloader)}')
@@ -145,7 +170,7 @@ if __name__ == "__main__":
     #mean = (0.5, 0.5, 0.5)
     #std = (0.5, 0.5, 0.5)
 
-    size = 256
+    size = 512
 
     root = os.path.dirname(__file__)  # data folder
     data_folder = "data"
@@ -178,7 +203,7 @@ if __name__ == "__main__":
         images, targets = batch
         masks = targets['masks']
         labels = targets['labels']
-        #pdb.set_trace()
+        pdb.set_trace()
         for fname in targets['image_id']:
             fnames_dict[fname] += 1
 

@@ -66,6 +66,7 @@ def mask2rle(img, width, height):
 
     return " ".join(rle)
 
+
 def rle2mask(rle, width, height):
     mask= np.zeros(width* height)
     array = np.asarray([int(x) for x in rle.split()])
@@ -79,3 +80,37 @@ def rle2mask(rle, width, height):
         current_position += lengths[index]
 
     return mask.reshape(width, height)
+
+
+def mask2rlev2(img, width, height):
+    # https://www.kaggle.com/c/siim-acr-pneumothorax-segmentation/discussion/98317#latest-567204
+    rle = []
+    lastColor = 0;
+    currentPixel = 0;
+    runStart = -1;
+    runLength = 0;
+
+
+    for x in range(width):
+        for y in range(height):
+            currentColor = img[x][y]
+            if currentColor != lastColor:
+                if currentColor == 255:
+                    runStart = currentPixel;
+                    runLength = 1;
+                else:
+                    rle.append(runStart);
+                    rle.append(runLength);
+                    runStart = -1;
+                    runLength = 0;
+                    currentPixel = 0;
+            elif runStart > -1:
+                runLength += 1
+            lastColor = currentColor;
+            currentPixel+=1;
+    if lastColor == 255:
+        rle.append(runStart)
+        rle.append(runLength)
+
+    return " ".join(rle)
+

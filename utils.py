@@ -12,29 +12,22 @@ import numpy as np
 from datetime import datetime
 
 # from config import HOME
+import torch.backends.cudnn as cudnn
 from tensorboard_logger import log_value, log_images
 from torchnet.meter import ConfusionMeter
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.metrics import cohen_kappa_score
 from matplotlib import pyplot as plt
 from pycm import ConfusionMatrix
+from extras import *
 
-plt.switch_backend("agg")
 
-
-def logger_init(save_folder):
-    mkdir(save_folder)
-    logging.basicConfig(
-        filename=os.path.join(save_folder, "log.txt"),
-        filemode="a",
-        level=logging.DEBUG,
-        format="%(asctime)s %(message)s",
-        datefmt="%H:%M:%S",
-    )
-    console = logging.StreamHandler()
-    logger = logging.getLogger(__name__)
-    logger.addHandler(console)
-    return logger
+def setup(use_cuda):
+    if use_cuda:
+        cudnn.benchmark = True
+        torch.set_default_tensor_type("torch.cuda.FloatTensor")
+    else:
+        torch.set_default_tensor_type("torch.FloatTensor")
 
 
 def predict(X, threshold):
@@ -51,6 +44,42 @@ def compute_score_inv(threshold, predictions, targets):
     return 1 - score
 
 
+
+def metric(logit, truth, threshold=0.5, reduction='none'):
+    batch_size = len(truth)
+
+    with torch.no_grad():
+        logit = logit.view(batch_size, -1)
+        truth = truth.view(batch_size, -1)
+        assert(logit.shape == truth.shape)
+
+        probability = torch.sigmoid(logit)
+        p = (probability > threshold).float()
+        t = (truth > 0.5).float()
+
+        t_sum = t.sum(-1)
+        p_sum = p.sum(-1)
+        neg_index = torch.nonzero(t_sum == 0)
+        pos_index = torch.nonzero(t_sum >= 1)
+        #print(len(neg_index), len(pos_index))
+
+        dice_neg = (p_sum == 0).float()
+        dice_pos = 2 * (p*t).sum(-1)/((p+t).sum(-1))
+
+        dice_neg = dice_neg[neg_index]
+        dice_pos = dice_pos[pos_index]
+        dice = torch.cat([dice_pos, dice_neg])
+
+        dice_neg = np.nan_to_num(dice_neg.mean().item(), 0)
+        dice_pos = np.nan_to_num(dice_pos.mean().item(), 0)
+        dice = dice.mean().item()
+
+        num_neg = len(neg_index)
+        num_pos = len(pos_index)
+
+    return dice, dice_neg, dice_pos, num_neg, num_pos
+
+
 class Meter:
     def __init__(self, phase, epoch, save_folder):
         self.predictions = []
@@ -61,21 +90,31 @@ class Meter:
         self.base_threshold = 0.7
         self.best_threshold = 0.7
         self.base_dice_scores = []
+        self.dice_neg_scores = []
+        self.dice_pos_scores = []
+        self.iou_scores = []
 
     def update(self, targets, outputs):
         """targets, outputs are detached CUDA tensors"""
         #pdb.set_trace()
-        outputs = outputs.cpu().numpy()
-        targets = targets.cpu().numpy()
-        base_preds = predict(outputs, self.base_threshold)
-        dice = compute_dice(outputs, targets)
+        #outputs = outputs.cpu().numpy()
+        #targets = targets.cpu().numpy()
+        #base_preds = predict(outputs, self.base_threshold)
+        #dice = compute_dice(outputs, targets)
+        dice, dice_neg, dice_pos, _, _ = metric(outputs, targets, self.base_threshold)
         self.base_dice_scores.append(dice)
-
-        if self.phase == "val": # [10]
-            self.targets.extend(targets)
-            self.predictions.extend(outputs)
+        self.dice_pos_scores.append(dice_pos)
+        self.dice_neg_scores.append(dice_neg)
+        probabilities = torch.sigmoid(outputs)
+        iou = IoU(probabilities, targets, self.base_threshold)
+        self.iou_scores.append(iou)
+        #if self.phase == "val": # [10]
+        #    self.targets.extend(targets)
+        #    self.predictions.extend(outputs) <<< NO, use thresholded
 
     def get_best_threshold(self):
+        return self.base_threshold
+        ''' not using '''
         if self.phase == "train":
             return self.base_threshold
 
@@ -91,39 +130,25 @@ class Meter:
             method="nelder-mead",
         )
         self.best_threshold = simplex["x"][0]
-        print("Best threshold: %s" % self.best_threshold)
+        #print("Best threshold: %s" % self.best_threshold)
         return self.best_threshold
 
     def get_metrics(self):
         #pdb.set_trace()
-        base_dice = np.mean(self.base_dice_scores)
-        best_dice = base_dice
-        if self.phase == "val":
-            best_preds = predict(self.predictions, self.best_threshold)
-            best_dice = compute_dice(best_preds, self.targets)
-        return best_dice, base_dice
+        #base_dice = np.mean(self.base_dice_scores)
+        #best_dice = base_dice
+        #if self.phase == "val":
+        #    best_preds = predict(self.predictions, self.best_threshold)
+        #    best_dice = compute_dice(best_preds, self.targets)
+        dices = self.get_dices()
+        iou = np.mean(self.iou_scores)
+        return dices, iou
 
-
-def plot_ROC(roc, targets, predictions, phase, epoch, folder):
-    roc_plot_folder = os.path.join(folder, "ROC_plots")
-    mkdir(os.path.join(roc_plot_folder))
-    fpr, tpr, thresholds = roc_curve(targets, predictions)
-    roc_plot_name = "ROC_%s_%s_%0.4f" % (phase, epoch, roc)
-    roc_plot_path = os.path.join(roc_plot_folder, roc_plot_name + ".jpg")
-    fig = plt.figure(figsize=(10, 5))
-    plt.plot([0, 1], [0, 1], linestyle="--")
-    plt.plot(fpr, tpr, marker=".")
-    plt.legend(["diagonal-line", roc_plot_name])
-    fig.savefig(roc_plot_path, bbox_inches="tight", pad_inches=0)
-    plt.close(fig)  # see footnote [1]
-
-    plot = cv2.imread(roc_plot_path)
-    log_images(roc_plot_name, [plot], epoch)
-
-
-def print_time(log, start, string):
-    diff = time.time() - start
-    log(string + ": %02d:%02d" % (diff // 60, diff % 60))
+    def get_dices(self):
+        dice = np.mean(self.base_dice_scores)
+        dice_neg = np.mean(self.dice_neg_scores)
+        dice_pos = np.mean(self.dice_pos_scores)
+        return dice, dice_neg, dice_pos
 
 
 def adjust_lr(lr, optimizer):
@@ -136,40 +161,28 @@ def adjust_lr(lr, optimizer):
     return optimizer
 
 
-def iter_log(log, phase, epoch, iteration, epoch_size, loss, start):
+def epoch_log(opt, log, tb, phase, epoch, epoch_loss, meter, start):
+    lr = opt.param_groups[-1]["lr"]
     diff = time.time() - start
-    log(
-        "%s epoch: %d (%d/%d) loss: %.4f || %02d:%02d",
-        phase,
-        epoch,
-        iteration,
-        epoch_size,
-        loss.item(),
-        diff // 60,
-        diff % 60,
-    )
+    #best_dice, base_dice = meter.get_metrics()
+    dices, iou = meter.get_metrics()
+    dice, dice_neg, dice_pos = dices
 
-
-def epoch_log(log, tb, phase, epoch, epoch_loss, meter, start):
-    diff = time.time() - start
-    best_dice, base_dice = meter.get_metrics()
-
-    log("best/base dice: %0.4f/%0.4f"
-            % (best_dice, base_dice))
+    log("lr: %0.04f | IoU: %0.4f" % (lr, iou))
+    log("dice: %0.4f | dice_neg: %0.4f | dice_pos: %0.4f" % (dice, dice_neg, dice_pos))
     #log("Time taken for %s phase: %02d:%02d", phase, diff // 60, diff % 60)
 
     # tensorboard
     logger = tb[phase]
+    logger.log_value("lr", lr, epoch)
     logger.log_value("loss", epoch_loss, epoch)
-    logger.log_value("best_dice", best_dice, epoch)
-    logger.log_value("base_dice", base_dice, epoch)
+    logger.log_value("dice", dice, epoch)
+    logger.log_value("dice_neg", dice_neg, epoch)
+    logger.log_value("dice_pos", dice_pos, epoch)
+    #logger.log_value("best_dice", best_dice, epoch)
+    #logger.log_value("base_dice", base_dice, epoch)
 
     return None
-
-def mkdir(folder):
-    if not os.path.exists(folder):
-        os.mkdir(folder)
-
 
 def compute_ious(pred, label, classes, ignore_index=255, only_present=True):
     '''
@@ -201,7 +214,7 @@ def compute_iou_batch(outputs, labels, classes=None):
 
 
 def compute_dice(preds, target):
-    eps = 0.0001
+    eps = 1 # dice is 1 when both are empty.
     outputs = np.copy(preds) # IMP
     inter = np.sum(outputs * target)
     union = np.sum(outputs) + np.sum(target) + eps
@@ -209,50 +222,24 @@ def compute_dice(preds, target):
     return t
 
 
-def save_hyperparameters(trainer, remark):
-    hp_file = os.path.join(trainer.save_folder, "parameters.txt")
-    time_now = datetime.now()
-    augmentations = trainer.dataloaders["train"].dataset.transforms.transforms
-    # pdb.set_trace()
-    string_to_write = (
-        f"Time: {time_now}\n"
-        + f"model_name: {trainer.model_name}\n"
-        + f"train_df_name: {trainer.train_df_name}\n"
-        #+ f"images_folder: {trainer.images_folder}\n"
-        + f"resume: {trainer.resume}\n"
-        + f"pretrained: {trainer.pretrained}\n"
-        + f"pretrained_path: {trainer.pretrained_path}\n"
-        + f"folder: {trainer.folder}\n"
-        + f"fold: {trainer.fold}\n"
-        + f"total_folds: {trainer.total_folds}\n"
-        + f"num_samples: {trainer.num_samples}\n"
-        + f"sampling class weights: {trainer.class_weights}\n"
-        + f"size: {trainer.size}\n"
-        + f"top_lr: {trainer.top_lr}\n"
-        + f"base_lr: {trainer.base_lr}\n"
-        + f"num_workers: {trainer.num_workers}\n"
-        + f"batchsize: {trainer.batch_size}\n"
-        + f"momentum: {trainer.momentum}\n"
-        + f"mean: {trainer.mean}\n"
-        + f"std: {trainer.std}\n"
-        + f"start_epoch: {trainer.start_epoch}\n"
-        + f"augmentations: {augmentations}\n"
-        + f"criterion: {trainer.criterion}\n"
-        + f"optimizer: {trainer.optimizer}\n"
-        + f"remark: {remark}\n"
-    )
+def dice(pred, targs):
+    pred = (pred>0).float()
+    return 2.0 * (pred*targs).sum() / ((pred+targs).sum() + 1.0)
 
-    with open(hp_file, "a") as f:
-        f.write(string_to_write)
-    print(string_to_write)
+def IoU(pred, targs, threshold):
+    ''' takes in sigmoid preds '''
+    pred = (pred>threshold).float()
+    intersection = (pred*targs).sum()
+    return intersection / ((pred+targs).sum() - intersection + 1.0)
 
 
-def seed_pytorch(seed=69):
-    random.seed(seed)
-    os.environ["PYTHONHASHSEED"] = str(seed)
-    np.random.seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.backends.cudnn.deterministic = True
+def collate_fn(batch):
+    pdb.set_trace()
+    images, targets = zip(*batch)
+    images = torch.Tensor(images)
+    #targets is a tuple of dicts
+    return images, targets
+
 
 
 """Footnotes:

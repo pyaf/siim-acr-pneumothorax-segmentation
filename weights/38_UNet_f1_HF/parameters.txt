@@ -1,0 +1,124 @@
+Time: 2019-08-03 16:08:42.571465
+model_name: UNet
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/38_UNet_f1_HF
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 0.001
+base_lr: None
+num_workers: 12
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0, 0, 0)
+std: (1, 1, 1)
+start_epoch: 0
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: <function criterion at 0x7fe968650a60>
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.001
+    weight_decay: 0
+)
+remark: all images, with cw 1, 3, base_th = 0.7
+Time: 2019-08-03 17:00:46.213743
+model_name: UNet
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/38_UNet_f1_HF
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 0.001
+base_lr: None
+num_workers: 12
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0, 0, 0)
+std: (1, 1, 1)
+start_epoch: 0
+augmentations: [ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: <function criterion at 0x7ff46bacba60>
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.001
+    weight_decay: 0
+)
+remark: all images, with cw 1, 3, base_th = 0.7
+Time: 2019-08-03 17:05:59.384621
+model_name: UNet
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/38_UNet_f1_HF
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 0.001
+base_lr: None
+num_workers: 12
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0, 0, 0)
+std: (1, 1, 1)
+start_epoch: 0
+augmentations: [ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: BCEWithLogitsLoss()
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.001
+    weight_decay: 0
+)
+remark: all images, with cw 1, 3, base_th = 0.7
+Time: 2019-08-03 17:19:25.194890
+model_name: UNet
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/38_UNet_f1_HF
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 0.001
+base_lr: None
+num_workers: 12
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0, 0, 0)
+std: (1, 1, 1)
+start_epoch: 0
+augmentations: [ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: <function criterion at 0x7f07658a8a60>
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.001
+    weight_decay: 0
+)
+remark: all images, with cw 1, 3, base_th = 0.7

@@ -1,0 +1,66 @@
+Time: 2019-08-03 18:42:27.006080
+model_name: UNet
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/38_UNet_f1_pre
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 0.001
+base_lr: None
+num_workers: 12
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 0
+augmentations: [Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.001
+    weight_decay: 0
+)
+remark: all images, with cw 1, 3, base_th = 0.7
+Time: 2019-08-03 18:43:14.076944
+model_name: UNet
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/38_UNet_f1_pre
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 0.001
+base_lr: None
+num_workers: 12
+batchsize: {'train': 32, 'val': 8}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 0
+augmentations: [Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.001
+    weight_decay: 0
+)
+remark: all images, with cw 1, 3, base_th = 0.7
