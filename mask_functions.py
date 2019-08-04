@@ -5,10 +5,7 @@ def run_length_decode(rle, height=1024, width=1024, fill_value=1):
 
     component = np.zeros((height, width), np.float32)
     component = component.reshape(-1)
-    if isinstance(rle, str):
-        rle = np.array([int(s) for s in rle.split(' ')])
-    elif isinstance(rle, list):
-        rle = np.array(rle)
+    rle = np.array([int(s) for s in rle.strip().split(' ')])
     rle = rle.reshape(-1, 2)
 
     start = 0

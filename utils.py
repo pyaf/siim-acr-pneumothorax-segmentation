@@ -36,24 +36,16 @@ def predict(X, threshold):
     return preds
 
 
-def compute_score_inv(threshold, predictions, targets):
-    #pdb.set_trace()
-    predictions = predict(predictions, threshold)
-    #score = compute_iou_batch(predictions, targets, classes=[1])
-    score = compute_dice(predictions, targets)
-    return 1 - score
-
-
-
-def metric(logit, truth, threshold=0.5, reduction='none'):
+def metric(probability, truth, threshold=0.5, reduction='none'):
+    '''probability and truth must be torch tensors'''
     batch_size = len(truth)
 
     with torch.no_grad():
-        logit = logit.view(batch_size, -1)
-        truth = truth.view(batch_size, -1)
-        assert(logit.shape == truth.shape)
 
-        probability = torch.sigmoid(logit)
+        probability = probability.view(batch_size, -1)
+        truth = truth.view(batch_size, -1)
+        assert(probability.shape == truth.shape)
+
         p = (probability > threshold).float()
         t = (truth > 0.5).float()
 
@@ -61,7 +53,6 @@ def metric(logit, truth, threshold=0.5, reduction='none'):
         p_sum = p.sum(-1)
         neg_index = torch.nonzero(t_sum == 0)
         pos_index = torch.nonzero(t_sum >= 1)
-        #print(len(neg_index), len(pos_index))
 
         dice_neg = (p_sum == 0).float()
         dice_pos = 2 * (p*t).sum(-1)/((p+t).sum(-1))
@@ -80,15 +71,23 @@ def metric(logit, truth, threshold=0.5, reduction='none'):
     return dice, dice_neg, dice_pos, num_neg, num_pos
 
 
+def compute_score_inv(threshold, predictions, targets):
+    #pdb.set_trace()
+    predictions = predict(predictions, threshold)
+    #score = compute_iou_batch(predictions, targets, classes=[1])
+    score = compute_dice(predictions, targets)
+    return 1 - score
+
+
 class Meter:
     def __init__(self, phase, epoch, save_folder):
-        self.predictions = []
+        self.probabilities = []
         self.targets = []
         self.phase = phase
         self.epoch = epoch
+        self.size = 256
         self.save_folder = os.path.join(save_folder, "logs")
         self.base_threshold = 0.7
-        self.best_threshold = 0.7
         self.base_dice_scores = []
         self.dice_neg_scores = []
         self.dice_pos_scores = []
@@ -99,49 +98,47 @@ class Meter:
         #pdb.set_trace()
         #outputs = outputs.cpu().numpy()
         #targets = targets.cpu().numpy()
-        #base_preds = predict(outputs, self.base_threshold)
-        #dice = compute_dice(outputs, targets)
-        dice, dice_neg, dice_pos, _, _ = metric(outputs, targets, self.base_threshold)
+        #pdb.set_trace()
+        probs = torch.sigmoid(outputs)
+        dice, dice_neg, dice_pos, _, _ = metric(probs, targets, self.base_threshold)
         self.base_dice_scores.append(dice)
         self.dice_pos_scores.append(dice_pos)
         self.dice_neg_scores.append(dice_neg)
-        probabilities = torch.sigmoid(outputs)
-        iou = IoU(probabilities, targets, self.base_threshold)
+        preds = predict(probs, self.base_threshold)
+        iou = compute_iou_batch(preds, targets, classes=[1])
         self.iou_scores.append(iou)
-        #if self.phase == "val": # [10]
-        #    self.targets.extend(targets)
-        #    self.predictions.extend(outputs) <<< NO, use thresholded
+
+        if self.phase == "val": # [10]
+            for prob, targ in zip(probs,targets):
+                prob = cv2.resize(prob[0].numpy(), (self.size, self.size))
+                targ = cv2.resize(targ[0].numpy(), (self.size, self.size))
+                self.probabilities.append(prob)
+                self.targets.append(targ)
 
     def get_best_threshold(self):
-        return self.base_threshold
-        ''' not using '''
-        if self.phase == "train":
-            return self.base_threshold
-
-        """Used in the val phase of iteration, see [4],
-        Epoch over, let's get targets in np array [6]"""
+        '''[4], [6]'''
+        if self.phase == "train": return None
         self.targets = np.array(self.targets)
-        self.predictions = np.array(self.predictions)
-        #pdb.set_trace()
+        self.probabilities = np.array(self.probabilities)
         simplex = scipy.optimize.minimize(
             compute_score_inv,
             self.base_threshold,
-            args=(self.predictions, self.targets),
+            args=(self.probabilities, self.targets),
             method="nelder-mead",
         )
         self.best_threshold = simplex["x"][0]
-        #print("Best threshold: %s" % self.best_threshold)
+        print("Best threshold: %s" % self.best_threshold)
         return self.best_threshold
+
+    def get_best_dice(self):
+        best_preds = predict(self.probabilities, self.best_threshold)
+        best_dice = compute_dice(best_preds, self.targets)
+        return best_dice
 
     def get_metrics(self):
         #pdb.set_trace()
-        #base_dice = np.mean(self.base_dice_scores)
-        #best_dice = base_dice
-        #if self.phase == "val":
-        #    best_preds = predict(self.predictions, self.best_threshold)
-        #    best_dice = compute_dice(best_preds, self.targets)
         dices = self.get_dices()
-        iou = np.mean(self.iou_scores)
+        iou = np.nanmean(self.iou_scores)
         return dices, iou
 
     def get_dices(self):
@@ -152,35 +149,31 @@ class Meter:
 
 
 def adjust_lr(lr, optimizer):
-    """ Update the lr of base model
-    # Adapted from PyTorch Imagenet example:
-    # https://github.com/pytorch/examples/blob/master/imagenet/main.py
-    """
     for param_group in optimizer.param_groups[:-1]:
         param_group["lr"] = lr
     return optimizer
 
 
 def epoch_log(opt, log, tb, phase, epoch, epoch_loss, meter, start):
-    lr = opt.param_groups[-1]["lr"]
-    diff = time.time() - start
-    #best_dice, base_dice = meter.get_metrics()
+    logger = tb[phase]
+    if phase == "val":
+        best_dice = meter.get_best_dice()
+        log("best_dice: %0.04f" % best_dice)
+        logger.log_value("best_dice", best_dice, epoch)
+
     dices, iou = meter.get_metrics()
     dice, dice_neg, dice_pos = dices
+    lr = opt.param_groups[-1]["lr"]
 
-    log("lr: %0.04f | IoU: %0.4f" % (lr, iou))
+    log("lr: %f | IoU: %0.4f" % (lr, iou))
     log("dice: %0.4f | dice_neg: %0.4f | dice_pos: %0.4f" % (dice, dice_neg, dice_pos))
-    #log("Time taken for %s phase: %02d:%02d", phase, diff // 60, diff % 60)
 
-    # tensorboard
-    logger = tb[phase]
     logger.log_value("lr", lr, epoch)
     logger.log_value("loss", epoch_loss, epoch)
+    logger.log_value("IoU", iou, epoch)
     logger.log_value("dice", dice, epoch)
     logger.log_value("dice_neg", dice_neg, epoch)
     logger.log_value("dice_pos", dice_pos, epoch)
-    #logger.log_value("best_dice", best_dice, epoch)
-    #logger.log_value("base_dice", base_dice, epoch)
 
     return None
 
@@ -207,8 +200,9 @@ def compute_ious(pred, label, classes, ignore_index=255, only_present=True):
 def compute_iou_batch(outputs, labels, classes=None):
     ious = []
     preds = np.copy(outputs) # copy is imp
+    labels = np.array(labels) # tensor to np
     for pred, label in zip(preds, labels):
-        ious.append(np.nanmean(compute_ious(pred, label, classes)))
+        ious.append(compute_ious(pred, label, classes))
     iou = np.nanmean(ious)
     return iou
 
@@ -220,17 +214,6 @@ def compute_dice(preds, target):
     union = np.sum(outputs) + np.sum(target) + eps
     t = (2 * inter + eps) / union
     return t
-
-
-def dice(pred, targs):
-    pred = (pred>0).float()
-    return 2.0 * (pred*targs).sum() / ((pred+targs).sum() + 1.0)
-
-def IoU(pred, targs, threshold):
-    ''' takes in sigmoid preds '''
-    pred = (pred>threshold).float()
-    intersection = (pred*targs).sum()
-    return intersection / ((pred+targs).sum() - intersection + 1.0)
 
 
 def collate_fn(batch):

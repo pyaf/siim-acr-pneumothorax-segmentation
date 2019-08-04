@@ -36,8 +36,8 @@ class SIIMDataset(Dataset):
     def __getitem__(self, idx):
         image_id = self.fnames[idx]
 
-        image_path = os.path.join(self.root, "npy_train_512",  image_id + '.npy')
-        mask_path = os.path.join(self.root, "npy_masks_512", image_id + '.npy')
+        image_path = os.path.join(self.root, "npy_train_1024",  image_id + '.npy')
+        mask_path = os.path.join(self.root, "npy_masks_1024", image_id + '.npy')
         img = np.load(image_path)
         img = np.repeat(img, 3, axis=-1)
         mask = np.load(mask_path)
@@ -56,7 +56,7 @@ class SIIMDataset(Dataset):
         return img, target
 
     def __len__(self):
-        #return 10
+        #return 100
         return len(self.fnames)
 
 

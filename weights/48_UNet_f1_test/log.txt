@@ -1,0 +1,115 @@
+11:17:52 Starting epoch: 0 | phase: train 
+11:21:29 Starting epoch: 0 | phase: train 
+11:22:01 Starting epoch: 0 | phase: train 
+11:28:48 Starting epoch: 0 | phase: train 
+11:36:05 Starting epoch: 0 | phase: train 
+11:38:38 Starting epoch: 0 | phase: train 
+11:41:39 Starting epoch: 0 | phase: train 
+11:45:04 Starting epoch: 0 | phase: train 
+11:45:46 Starting epoch: 0 | phase: train 
+11:47:45 Starting epoch: 0 | phase: train 
+11:51:05 Starting epoch: 0 | phase: train 
+11:51:21 lr: 0.0005 | IoU: 0.0096
+11:51:21 dice: 0.0189 | dice_neg: 0.0000 | dice_pos: 0.0189
+11:51:21 Starting epoch: 0 | phase: val 
+11:51:38 best_dice: 0.0254
+11:51:38 lr: 0.0005 | IoU: 0.0101
+11:51:38 dice: 0.0195 | dice_neg: 0.0000 | dice_pos: 0.0195
+11:51:38 ******** New optimal found, saving state ********
+11:51:38 Total time taken so far: 00:33
+11:51:38 Starting epoch: 1 | phase: train 
+11:51:43 lr: 0.0005 | IoU: 0.0184
+11:51:43 dice: 0.0356 | dice_neg: 0.0000 | dice_pos: 0.0356
+11:51:44 Starting epoch: 1 | phase: val 
+11:51:58 best_dice: 0.0419
+11:51:58 lr: 0.0005 | IoU: 0.0209
+11:51:58 dice: 0.0399 | dice_neg: 0.0000 | dice_pos: 0.0399
+11:52:00 Total time taken so far: 00:55
+11:52:00 Starting epoch: 2 | phase: train 
+11:52:04 lr: 0.0005 | IoU: 0.0281
+11:52:04 dice: 0.0530 | dice_neg: 0.0000 | dice_pos: 0.0530
+11:52:04 Starting epoch: 2 | phase: val 
+11:52:17 best_dice: 0.0589
+11:52:17 lr: 0.0005 | IoU: 0.0268
+11:52:17 dice: 0.0504 | dice_neg: 0.0000 | dice_pos: 0.0504
+11:52:19 ******** New optimal found, saving state ********
+11:52:20 Total time taken so far: 01:15
+11:52:20 Starting epoch: 3 | phase: train 
+11:52:24 lr: 0.0005 | IoU: 0.0495
+11:52:24 dice: 0.0904 | dice_neg: 0.0000 | dice_pos: 0.0904
+11:52:24 Starting epoch: 3 | phase: val 
+11:52:38 best_dice: 0.0857
+11:52:38 lr: 0.0005 | IoU: 0.0390
+11:52:38 dice: 0.0726 | dice_neg: 0.0000 | dice_pos: 0.0726
+11:52:40 ******** New optimal found, saving state ********
+11:52:42 Total time taken so far: 01:37
+11:52:42 Starting epoch: 4 | phase: train 
+11:52:46 lr: 0.0005 | IoU: 0.0629
+11:52:46 dice: 0.1105 | dice_neg: 0.0000 | dice_pos: 0.1105
+11:52:47 Starting epoch: 4 | phase: val 
+11:52:59 best_dice: 0.1510
+11:52:59 lr: 0.0005 | IoU: 0.0652
+11:52:59 dice: 0.1162 | dice_neg: 0.0000 | dice_pos: 0.1162
+11:53:01 ******** New optimal found, saving state ********
+11:53:03 Total time taken so far: 01:58
+11:53:03 Starting epoch: 5 | phase: train 
+11:53:07 lr: 0.0005 | IoU: 0.1232
+11:53:07 dice: 0.1976 | dice_neg: 0.0000 | dice_pos: 0.1976
+11:53:07 Starting epoch: 5 | phase: val 
+11:53:19 best_dice: 0.2040
+11:53:19 lr: 0.0005 | IoU: 0.1006
+11:53:19 dice: 0.1715 | dice_neg: 0.0000 | dice_pos: 0.1715
+19:21:31 Resuming training, loading weights/38_UNet_f1_ft1024/ckpt23.pth ...
+19:38:32 Resuming training, loading weights/48_UNet_f1_ft1024/ckpt23.pth ...
+19:39:03 Resuming training, loading weights/48_UNet_f1_ft1024/ckpt38.pth ...
+19:39:03 Starting epoch: 39 | phase: train 
+19:43:23 Resuming training, loading weights/48_UNet_f1_ft1024/ckpt38.pth ...
+19:43:24 Starting epoch: 39 | phase: train 
+19:52:17 lr: 0.000010 | IoU: 0.3305
+19:52:17 dice: 0.5135 | dice_neg: 0.5977 | dice_pos: 0.4142
+19:52:17 Starting epoch: 39 | phase: val 
+19:53:45 best_dice: 0.5525
+19:53:45 lr: 0.000010 | IoU: 0.3374
+19:53:45 dice: 0.5085 | dice_neg: 0.4107 | dice_pos: 0.3340
+19:53:47 Total time taken so far: 10:23
+19:53:47 Starting epoch: 40 | phase: train 
+20:02:27 lr: 0.000010 | IoU: 0.3324
+20:02:27 dice: 0.4991 | dice_neg: 0.5608 | dice_pos: 0.4229
+20:02:27 Starting epoch: 40 | phase: val 
+20:03:56 best_dice: 0.5601
+20:03:56 lr: 0.000010 | IoU: 0.3327
+20:03:56 dice: 0.5191 | dice_neg: 0.4317 | dice_pos: 0.3322
+20:03:58 Total time taken so far: 20:34
+20:03:58 Starting epoch: 41 | phase: train 
+20:12:39 lr: 0.000010 | IoU: 0.3364
+20:12:39 dice: 0.5010 | dice_neg: 0.5591 | dice_pos: 0.4249
+20:12:39 Starting epoch: 41 | phase: val 
+20:14:14 best_dice: 0.5636
+20:14:14 lr: 0.000010 | IoU: 0.3427
+20:14:14 dice: 0.5428 | dice_neg: 0.4769 | dice_pos: 0.3412
+20:14:17 Total time taken so far: 30:53
+20:14:17 Starting epoch: 42 | phase: train 
+20:22:52 lr: 0.000010 | IoU: 0.3399
+20:22:52 dice: 0.4992 | dice_neg: 0.5561 | dice_pos: 0.4262
+20:22:52 Starting epoch: 42 | phase: val 
+20:24:23 best_dice: 0.5618
+20:24:23 lr: 0.000010 | IoU: 0.3364
+20:24:23 dice: 0.5245 | dice_neg: 0.4485 | dice_pos: 0.3372
+20:24:25 Total time taken so far: 41:01
+20:24:25 Starting epoch: 43 | phase: train 
+20:33:09 lr: 0.000010 | IoU: 0.3344
+20:33:09 dice: 0.5276 | dice_neg: 0.6122 | dice_pos: 0.4196
+20:33:09 Starting epoch: 43 | phase: val 
+20:34:41 best_dice: 0.5609
+20:34:41 lr: 0.000010 | IoU: 0.3454
+20:34:41 dice: 0.5169 | dice_neg: 0.4118 | dice_pos: 0.3357
+20:34:43 Total time taken so far: 51:19
+20:34:43 Starting epoch: 44 | phase: train 
+20:43:20 lr: 0.000010 | IoU: 0.3365
+20:43:20 dice: 0.5261 | dice_neg: 0.6053 | dice_pos: 0.4179
+20:43:20 Starting epoch: 44 | phase: val 
+20:44:50 best_dice: 0.5645
+20:44:50 lr: 0.000010 | IoU: 0.3382
+20:44:50 dice: 0.5518 | dice_neg: 0.4884 | dice_pos: 0.3400
+20:44:52 Total time taken so far: 61:28
+20:44:52 Starting epoch: 45 | phase: train 

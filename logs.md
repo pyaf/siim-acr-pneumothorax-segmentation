@@ -58,7 +58,7 @@ analysing the train preds of seg model, it is not learning anything, random thin
 
 * `38_UNet_f1_HF`: removed augs of flip and transpose and random scale, only horizontal flip. with criterion.
 OMG OMG OMG, something is happening. OMG I'm crying, this was the fucking issue, you don't need 360 deg rotation and random flip even vertical and transpose, fml |_|
-dice 0.15 in first epoch
+dice 0.15 in first epoch, no this wasn't the issue
 learn to read the forums \m/
 not getting above 0.2 in train dice, retraining with grad accu for bs 32, with BCELossWithLogits, no aug at all.
 BCELossWithLogits getting biased towards background class
@@ -80,7 +80,14 @@ removing datasampler increases time to 4:22
 
 
 * `38_UNet_f1_512` training on 512 npy images, with equal pos and neg images, with aug horizontalflip, rotate(10),
-IoU is buggy.
+IoU is buggy. loss is fluctuating, will train with 4e-5 next time.
+ckpt 23
+Val optimized th: 0.402, LB: 0.8385
+
+### 4 Aug
+
+* `48_UNet_f1_ft1024`: finetuning the ckpt23 of previous model on 1024 sized images., batch size =2,
+I'm still using equal pos and neg images
 
 
 

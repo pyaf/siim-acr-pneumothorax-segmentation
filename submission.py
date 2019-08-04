@@ -74,10 +74,7 @@ class TestDataset(data.Dataset):
     def __getitem__(self, idx):
         fname = self.fnames[idx]
         path = os.path.join(self.root, fname + ".png")
-        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-        #image = cv2.resize(image, (self.size, self.size))
-        image = np.expand_dims(image, -1)
-        image = np.repeat(image, 3, axis=-1)
+        image = cv2.imread(path)
 
         images = [self.transform(image=image)["image"]]
         for _ in range(self.tta):  # perform ttas
@@ -125,20 +122,21 @@ if __name__ == "__main__":
 
     sample_submission_path = "data/sample_submission.csv"
 
-    #sub_path = ckpt_path.replace(".pth", f"{predict_on}.csv")
-    npy_path = ckpt_path.replace(".pth", f"{predict_on}.npy")
+    sub_path = ckpt_path.replace(".pth", f"{predict_on}.csv")
+    npy_path = ckpt_path.replace(".pth", f"{predict_on}%d.npy")
     tta = 0  # number of augs in tta
 
     root = f"data/{predict_on}_png/"
-    size = 256
+    size = 1024
+    save_npy = False
+    save_rle = True
+    min_size = 3500
     mean = (0.485, 0.456, 0.406)
     std = (0.229, 0.224, 0.225)
-    #mean = (0, 0, 0)
-    #std = (1, 1, 1)
     use_cuda = True
     num_classes = 1
-    num_workers = 8
-    batch_size = 16
+    num_workers = 4
+    batch_size = 4
     device = torch.device("cuda" if use_cuda else "cpu")
     setup(use_cuda)
     df = pd.read_csv(sample_submission_path)
@@ -162,8 +160,13 @@ if __name__ == "__main__":
     state = torch.load(ckpt_path, map_location=lambda storage, loc: storage)
     model.load_state_dict(state["state_dict"])
     best_threshold = state["best_threshold"]
-    num_images = len(testset)
+    best_threshold = 0.5
+    print('best_threshold', best_threshold)
+    #exit()
+    num_batches = len(testset)
     predictions = []
+    encoded_pixels = []
+    npy_count = 0
     for i, batch in enumerate(tqdm(testset)):
         if tta:
             # images.shape [n, 3, 96, 96] where n is num of 1+tta
@@ -174,9 +177,35 @@ if __name__ == "__main__":
         else:
             #pdb.set_trace()
             preds = torch.sigmoid(model(batch[:, 0].to(device)))
-            preds = preds.detach().tolist()  # [1]
-            predictions.extend(preds)
+            preds = preds.detach().cpu().numpy()[:, 0, :, :]  # [1]
+            if save_npy:
+                predictions.extend(preds.tolist())
+            if save_rle:
+                for probability in preds:
+                    if probability.shape != (1024, 1024):
+                        probability = cv2.resize(probability,
+                                dsize=(1024, 1024), interpolation=cv2.INTER_LINEAR)
+                    predict, num_predict = post_process(probability,
+                            best_threshold, min_size)
+                    if num_predict == 0:
+                        encoded_pixels.append('-1')
+                    else:
+                        r = run_length_encode(predict)
+                        encoded_pixels.append(r)
 
-    np.save(npy_path, predictions) # raw preds
-    print("Done!")
+        if save_npy:
+            if (i+1) % (num_batches//10) == 0:
+                print('saving pred npy')
+                np.save(npy_path % npy_count, predictions) # raw preds
+                npy_count += 1
+                del predictions
+                predictions = []
+
+    if save_npy:
+        np.save(npy_path % npy_count, predictions) # raw preds
+        print("Done!")
+
+    if save_rle:
+        df['EncodedPixels'] = encoded_pixels
+        df.to_csv(sub_path, columns=['ImageId', 'EncodedPixels'], index=False)
 

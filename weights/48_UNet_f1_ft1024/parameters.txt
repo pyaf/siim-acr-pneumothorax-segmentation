@@ -1,0 +1,330 @@
+Time: 2019-08-04 13:01:10.628780
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 4}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:17:08.566915
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:17:37.326764
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:30:03.055898
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:35:45.012500
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:36:28.606422
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:37:45.811718
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:39:13.167100
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:40:18.227254
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-04 13:41:18.803924
+model_name: UNet
+train_df_name: train.csv
+resume: True
+pretrained: False
+pretrained_path: weights//ckpt31.pth
+folder: weights/48_UNet_f1_ft1024
+fold: 1
+total_folds: 5
+num_samples: None
+sampling class weights: None
+size: 1024
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 4, 'val': 2}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 24
+augmentations: [HorizontalFlip(always_apply=False, p=0.5), ShiftScaleRotate(always_apply=False, p=0.5, shift_limit=(0, 0), scale_limit=(-0.09999999999999998, 0.10000000000000009), rotate_limit=(-10, 10), interpolation=1, border_mode=0, value=None), Normalize(always_apply=False, p=1, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0), ToTensor(always_apply=True, p=1.0, num_classes=1, sigmoid=True, normalize=None)]
+criterion: MixedLoss(
+  (focal): FocalLoss()
+)
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 1e-05
+    weight_decay: 0
+)
+remark: 
