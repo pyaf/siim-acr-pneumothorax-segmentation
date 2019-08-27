@@ -6,11 +6,11 @@ from datetime import datetime
 import _thread
 
 from apex import amp
-from tqdm import tqdm
 import torch
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 from collections import defaultdict
+from tqdm import tqdm
 
 # from ssd import build_ssd
 import torch.nn as nn
@@ -21,89 +21,66 @@ from shutil import copyfile
 from models import get_model
 from utils import *
 from extras import *
-from loss import *
-
-seed_pytorch()
+from losses import *
+#from opt import RAdam
+from pathlib import Path
 
 
 warnings.filterwarnings("ignore")
 HOME = os.path.abspath(os.path.dirname(__file__))
 now = datetime.now()
-date = "%s%s" % (now.day, now.month)
+date = "%s-%s" % (now.day, now.month)
 # print(HOME)
 
 
 class Trainer(object):
     def __init__(self):
-        # remark = open("remark.txt", "r").read()
-        remark = ""
-        self.fold = 1
-        self.total_folds = 5
-        self.class_weights = None #[1, 1, 1, 1, 1.3]
-        self.model_name = "UNet"
-        ext_text = "test"
-        self.num_samples = None  # 5000
-        self.folder = f"weights/{date}_{self.model_name}_f{self.fold}_{ext_text}"
-        self.resume = True
-        self.pretrained = False
-        self.pretrained_path = "weights//ckpt31.pth"
-        self.resume_path = "weights/48_UNet_f1_ft1024/ckpt38.pth"
-        #self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
-        self.train_df_name = "train.csv"
-        self.num_workers = 12
-        self.batch_size = {"train": 4, "val": 2}
-        self.accumulation_steps = 32 // self.batch_size['train']
-        self.num_classes = 1
-        self.top_lr = 5e-5
-        self.ep2unfreeze = 0 # doesn't matter, will look into smp
-        self.num_epochs = 50
-        # self.base_lr = self.top_lr * 0.001
-        self.base_lr = None
-        self.momentum = 0.95
-        self.size = 1024
-        self.mean = (0.485, 0.456, 0.406)
-        self.std = (0.229, 0.224, 0.225)
-        #self.mean = (0, 0, 0)
-        #self.std = (1, 1, 1)
-        # self.weight_decay = 5e-4
-        self.best_loss = float("inf")
+        # seed_pytorch()
+        self.args = get_parser()
+        self.cfg = load_cfg(self.args)
+        self.model_name = self.cfg["model_name"]
+        ext_text = self.cfg["ext_text"]
+        self.filename = Path(self.args.filepath).stem
+        # {date}_{self.model_name}_f{self.fold}_{ext_text}
+        self.folder = f"weights/{self.filename}"
+        self.cfg["folder"] = self.folder
+        # self.resume = self.cfg['resume']
+        self.resume = self.args.resume
+        self.batch_size = self.cfg["batch_size"]
+        self.accumulation_steps = {x: 64 // bs for x, bs in self.batch_size.items()}
+        self.num_classes = self.cfg["num_classes"]
+        self.top_lr = eval(self.cfg["top_lr"])
+        self.ep2unfreeze = self.cfg["ep2unfreeze"]
+        self.num_epochs = self.cfg["num_epochs"]
+        self.base_lr = self.cfg["base_lr"]
+        self.momentum = self.cfg["momentum"]
+        self.patience = self.cfg["patience"]
+        self.phases = self.cfg["phases"]
         self.start_epoch = 0
-        self.phases = ["train", "val"]
+        self.best_qwk = 0
+        self.best_loss = float("inf")
         self.cuda = torch.cuda.is_available()
         torch.set_num_threads(12)
-        self.device = torch.device("cuda:0" if self.cuda else "cpu")
-        self.data_folder = "data"
-        #self.images_folder = os.path.join(HOME, data_folder, "train_png")
-        self.df_path = os.path.join(HOME, self.data_folder, self.train_df_name)
+        self.device = torch.device("cuda" if self.cuda else "cpu")
+        # self.df_path = self.cfg['df_path']
+        self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
+        # self.resume_path = self.cfg['resume_path']
         self.save_folder = os.path.join(HOME, self.folder)
         self.model_path = os.path.join(self.save_folder, "model.pth")
         self.ckpt_path = os.path.join(self.save_folder, "ckpt.pth")
-        self.tensor_type = "torch%s.FloatTensor" % (
-            ".cuda" if self.cuda else "")
-        torch.set_default_tensor_type(self.tensor_type)
-        self.net = get_model(self.model_name, self.num_classes)
-        #self.criterion = torch.nn.BCELoss() # requires sigmoid pred inputs
+        self.net = get_model(self.cfg)
+        #self.criterion = torch.nn.MSELoss()
         #self.criterion = torch.nn.BCEWithLogitsLoss()
         self.criterion = MixedLoss(10.0, 2.0)
-        #self.criterion = criterion
-        #self.criterion = DiceLoss()
         self.optimizer = optim.Adam(self.net.parameters(), lr=self.top_lr)
-        #self.optimizer = optim.SGD(self.net.parameters(), lr=self.top_lr, momentum=0.9, weight_decay=0.0001)
-        # self.optimizer = optim.SGD(
-        #    [
-        #        {"params": self.net.model.parameters()},
-        #        {"params": self.net.classifier.parameters(), "lr": self.top_lr},
-        #    ],
-        #    lr=self.base_lr if self.base_lr else self.top_lr,  # 1e-7#self.lr * 0.001,
-        #    momentum=self.momentum,
-        # )
-        # weight_decay=self.weight_decay)
+        # self.optimizer = RAdam(self.net.parameters(), lr=self.top_lr)
+        # lr_lambda = lambda epoch: epoch // 5
         self.scheduler = ReduceLROnPlateau(
-            self.optimizer, mode="min", patience=3, verbose=True
+            self.optimizer, mode="min", patience=self.patience, verbose=True
         )
         logger = logger_init(self.save_folder)
         self.log = logger.info
-        if self.resume or self.pretrained:
+        if self.resume:
             self.load_state()
         else:
             self.initialize_net()
@@ -113,51 +90,32 @@ class Trainer(object):
         self.net, self.optimizer = amp.initialize(
             self.net, self.optimizer, opt_level="O1", verbosity=0
         )
-
         if self.cuda:
             cudnn.benchmark = True
         self.tb = {
-            x: Logger(os.path.join(self.save_folder, "logs", x))
-            for x in ["train", "val"]
+            x: Logger(os.path.join(self.save_folder, "logs", x)) for x in self.phases
         }  # tensorboard logger, see [3]
         mkdir(self.save_folder)
-        self.dataloaders = {
-            phase: provider(
-                self.fold,
-                self.total_folds,
-                self.data_folder,
-                self.df_path,
-                phase,
-                self.size,
-                self.mean,
-                self.std,
-                class_weights=self.class_weights,
-                batch_size=self.batch_size[phase],
-                num_workers=self.num_workers,
-                num_samples=self.num_samples,
-            )
-            for phase in ["train", "val"]
-        }
-        save_hyperparameters(self, remark)
+        self.dataloaders = {phase: provider(phase, self.cfg) for phase in self.phases}
+        check_sanctity(self.dataloaders)
+        save_cfg(self.cfg, self)
 
     def load_state(self):  # [4]
         if self.resume:
             path = self.resume_path
             self.log("Resuming training, loading {} ...".format(path))
-        elif self.pretrained:
-            path = self.pretrained_path
-            self.log("loading pretrained, {} ...".format(path))
         state = torch.load(path, map_location=lambda storage, loc: storage)
         self.net.load_state_dict(state["state_dict"])
 
         if self.resume:
             self.optimizer.load_state_dict(state["optimizer"])
             self.best_loss = state["best_loss"]
+            self.best_qwk = state["best_qwk"]
             self.start_epoch = state["epoch"] + 1
-            if self.start_epoch > 5:
-                # self.base_lr = self.top_lr
-                # print(f"Base lr = Top lr = {self.top_lr}")
-                pass
+            if self.start_epoch > self.cfg['ep2unfreeze']:
+                for params in self.net.parameters():
+                    params.requires_grad = True
+                print('All parameters are trainable')
 
         if self.cuda:
             for opt_state in self.optimizer.state.values():
@@ -174,42 +132,41 @@ class Trainer(object):
         images = images.to(self.device)
         masks = targets['masks'].to(self.device)
         outputs = self.net(images)
-        #loss = self.criterion(outputs.flatten(), masks.flatten())
         loss = self.criterion(outputs, masks)
         return loss, outputs
 
     def iterate(self, epoch, phase):
+        start = time.strftime("%H:%M:%S")
+        self.log(f"Starting epoch: {epoch} | phase: {phase} | {start}")
         meter = Meter(phase, epoch, self.save_folder)
-        self.log("Starting epoch: %d | phase: %s " % (epoch, phase))
         batch_size = self.batch_size[phase]
-        start = time.time()
         self.net.train(phase == "train")
         dataloader = self.dataloaders[phase]
-        running_loss = 0.0
-        total_batches = len(dataloader) # [5]
+        running_loss = 0
+        total_batches = len(dataloader)
         tk0 = tqdm(dataloader, total=total_batches)
+        accu_steps = self.accumulation_steps[phase]
         self.optimizer.zero_grad()
         for itr, batch in enumerate(tk0):
             images, targets = batch
-            # pdb.set_trace()
             loss, outputs = self.forward(images, targets)
-            loss = loss / self.accumulation_steps
+            loss = loss / accu_steps
             if phase == "train":
                 with amp.scale_loss(loss, self.optimizer) as scaled_loss:
                     scaled_loss.backward()
-                if (itr + 1 ) % self.accumulation_steps == 0:
+                if (itr + 1) % accu_steps == 0:
                     self.optimizer.step()
                     self.optimizer.zero_grad()
             running_loss += loss.item()
-            outputs = outputs.detach().cpu() # [6]
+            outputs = outputs.detach().cpu()
             meter.update(targets['masks'], outputs)
-            tk0.set_postfix(loss=(running_loss / ((itr + 1)))) #[7]
+            tk0.set_postfix(loss=((running_loss * accu_steps) / ((itr + 1))))
         best_threshold = meter.get_best_threshold()
-        epoch_loss = running_loss / total_batches
-        epoch_log(self.optimizer, self.log, self.tb, phase,
-                        epoch, epoch_loss, meter, start)
+        epoch_loss = (running_loss * accu_steps) / total_batches
+        epoch_log(
+            self.optimizer, self.log, self.tb, phase, epoch, epoch_loss, meter, start
+        )
         torch.cuda.empty_cache()
-        print('\n')
         return epoch_loss, best_threshold
 
     def train(self):
@@ -229,24 +186,38 @@ class Trainer(object):
                 "state_dict": self.net.state_dict(),
                 "optimizer": self.optimizer.state_dict(),
             }
-            val_loss, best_threshold = self.iterate(epoch, "val")
-            state['best_threshold'] = best_threshold
+            torch.save(state, self.ckpt_path)  # [2]
+            val_loss, best_thresholds = self.iterate(epoch, "val")
+            state["best_thresholds"] = best_thresholds
             torch.save(state, self.ckpt_path)  # [2]
             self.scheduler.step(val_loss)
-
             if val_loss < self.best_loss:
                 self.log("******** New optimal found, saving state ********")
                 state["best_loss"] = self.best_loss = val_loss
                 torch.save(state, self.model_path)
-
             copyfile(
-                self.ckpt_path, os.path.join(
-                    self.save_folder, "ckpt%d.pth" % epoch)
+                self.ckpt_path, os.path.join(self.save_folder, "ckpt%d.pth" % epoch)
             )
-            #print_time(self.log, t_epoch_start, "Time taken by the epoch")
+            if epoch == 0 and len(self.dataloaders["train"]) > 100:
+                # make sure train/val ran error free, and it's not debugging
+                commit(self.filename)
+            # print_time(self.log, t_epoch_start, "Time taken by the epoch")
             print_time(self.log, t0, "Total time taken so far")
-            print('\n\n')
-            #self.log("\n" + "=" * 60 + "\n")
+            print()
+            """ progressive resizing
+            if (epoch+1) % 5 == 0:
+                self.cfg['size'] = [299, 384, 512, 784, 1024][(epoch+1) // 5]
+                if self.cfg['size'] == 512:
+                    self.cfg['batch_size'] = {'train': 4, 'val':4}
+                elif self.cfg['size'] > 512:
+                    self.cfg['batch_size'] = {'train': 2, 'val':2}
+                self.log('*** Setting size to %d ***' % self.cfg['size'])
+                self.log('batch size %s' % self.cfg['batch_size'])
+                self.dataloaders = {
+                    phase: provider(phase, self.cfg) for phase in self.phases
+                }
+            """
+            # self.log("\n" + "=" * 60 + "\n")
 
 
 if __name__ == "__main__":
@@ -263,12 +234,4 @@ LongTensor, BCELoss expects targets to be FloatTensor
 [3]: one tensorboard logger for train and val each, in same folder, so that we can see plots on the same graph
 
 [4]: if pretrained is true, a model state from self.pretrained path will be loaded, if self.resume is true, self.resume_path will be loaded, both are true, self.resume_path will be loaded
-
-[5]: len(dataloader) returns total batches, if datasampler doesn't contain more than dataset.__len__() indices.
-
-[6]: detach -> requires_grad = False, but still a CUDA variable
-
-[7]: loss is mean by batch, so no need to divide by all images, just take mean by total batches
 """
-
-

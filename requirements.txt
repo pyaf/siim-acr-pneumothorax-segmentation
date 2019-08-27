@@ -1,0 +1,11 @@
+opencv-python
+albumentations
+pillow
+pandas
+sklearn
+tensorboard_logger
+pycm
+tqdm
+scipy
+torchnet
+matplotlib

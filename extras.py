@@ -6,6 +6,8 @@ import os
 import pdb
 import cv2
 import time
+import yaml
+import pprint
 import json
 import torch
 import random
@@ -13,13 +15,65 @@ import scipy
 import logging
 import traceback
 import numpy as np
+from shutil import copyfile
 from datetime import datetime
-
-# from config import HOME
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from tensorboard_logger import log_value, log_images
 from matplotlib import pyplot as plt
 
 plt.switch_backend("agg")
+
+
+def get_parser():
+    """Get parser object."""
+    parser = ArgumentParser(
+        description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        "-f",
+        "--file",
+        dest="filepath",
+        help="experiment config file",
+        metavar="FILE",
+        required=True,
+    )
+    parser.add_argument(
+        "-r",
+        "--resume",
+        dest="resume",
+        help="Use when to resume from ckpt.pth",
+        action="store_true",
+    )  # use -r when to resume, else don't
+
+    args = parser.parse_args()
+    return args
+
+
+def load_cfg(args):
+    filepath = args.filepath
+    with open(filepath, "r") as stream:
+        try:
+            cfg = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(cfg)
+    return cfg
+
+
+def save_cfg(cfg, trainer):
+    augmentations = trainer.dataloaders["train"].dataset.transforms.transforms.transforms
+    text = (
+        f"model_name: {trainer.model_name}\n"
+        + f"augmentations: {augmentations}\n"
+        + f"criterion: {trainer.criterion}\n"
+        + f"optimizer: {trainer.optimizer}\n"
+    )
+    print(text)
+    filepath = trainer.args.filepath
+    filename = os.path.basename(filepath)
+    cp_file = os.path.join(trainer.save_folder, filename)
+    copyfile(filepath, cp_file)
 
 
 def logger_init(save_folder):
@@ -124,5 +178,34 @@ def seed_pytorch(seed=69):
     np.random.seed(seed)
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
+
+
+def commit(model_name):
+    import subprocess
+
+    cmd1 = "git add ."
+    cmd2 = f'git commit -m "{model_name}"'
+    process = subprocess.Popen(cmd1.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    if error:
+        print(error)
+    process = subprocess.Popen(cmd2.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    if error:
+        print(error)
+
+
+
+def check_sanctity(dataloaders):
+    phases = dataloaders.keys()
+    if len(phases) > 1:
+        tnames = dataloaders["train"].dataset.fnames
+        vnames = dataloaders["val"].dataset.fnames
+        common = [x for x in tnames if x in vnames]
+        if len(common):
+            print("TRAIN AND VAL SET NOT DISJOINT")
+            exit()
+    else:
+        print("No sanctity check")
 
 

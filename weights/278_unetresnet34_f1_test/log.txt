@@ -1,0 +1,17 @@
+16:27:53 Starting epoch: 0 | phase: train | 16:27:53
+16:31:34 Starting epoch: 0 | phase: train | 16:31:34
+16:41:12 Starting epoch: 0 | phase: train | 16:41:12
+16:46:13 lr: 0.000010 | IoU: nan
+16:46:13 dice: 0.0000 | dice_neg: 0.0000 | dice_pos: 0.0000
+16:46:14 Starting epoch: 0 | phase: val | 16:46:14
+16:47:37 Starting epoch: 0 | phase: train | 16:47:37
+16:51:31 Starting epoch: 0 | phase: train | 16:51:31
+16:56:25 Starting epoch: 0 | phase: train | 16:56:25
+16:57:11 Starting epoch: 0 | phase: train | 16:57:11
+17:02:06 lr: 0.000100 | IoU: nan
+17:02:06 dice: 0.1235 | dice_neg: 0.1235 | dice_pos: 0.0000
+17:02:08 Starting epoch: 0 | phase: val | 17:02:08
+17:03:44 best_dice: 0.0061
+17:03:44 lr: 0.000100 | IoU: nan
+17:03:44 dice: 0.4158 | dice_neg: 0.4158 | dice_pos: 0.0000
+17:03:46 ******** New optimal found, saving state ********

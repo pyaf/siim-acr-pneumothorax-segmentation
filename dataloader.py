@@ -13,22 +13,20 @@ from torch.utils.data import DataLoader, Dataset, sampler
 from torchvision.datasets.folder import pil_loader
 from sklearn.model_selection import train_test_split, StratifiedKFold
 #from utils import to_multi_label
-from albumentations import *
-from albumentations import torch as AT
+from augmentations import *
+from extras import *
 from mask_functions import *
 
 
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 class SIIMDataset(Dataset):
-    def __init__(self, df, data_folder, size, mean, std, phase):
+    def __init__(self, df, phase, cfg):
         self.df = df
-        self.root = data_folder
-        self.size = size
-        self.mean = mean
-        self.std = std
+        self.root = os.path.join(cfg['home'], cfg['data_folder'])
+        self.size = cfg['size']
         self.phase = phase
-        self.transforms, self.img_trfms = get_transforms(phase, size, mean, std)
+        self.transforms, self.img_trfms = get_transforms(phase, cfg)
 
         self.fnames = self.df['ImageId'].tolist()
         self.labels = self.df['has_mask'].values.astype(np.int32) # [12]
@@ -36,8 +34,8 @@ class SIIMDataset(Dataset):
     def __getitem__(self, idx):
         image_id = self.fnames[idx]
 
-        image_path = os.path.join(self.root, "npy_train_1024",  image_id + '.npy')
-        mask_path = os.path.join(self.root, "npy_masks_1024", image_id + '.npy')
+        image_path = os.path.join(self.root, "npy_train_512",  image_id + '.npy')
+        mask_path = os.path.join(self.root, "npy_masks_512", image_id + '.npy')
         img = np.load(image_path)
         img = np.repeat(img, 3, axis=-1)
         mask = np.load(mask_path)
@@ -60,89 +58,37 @@ class SIIMDataset(Dataset):
         return len(self.fnames)
 
 
-def get_transforms(phase, size, mean, std):
-    list_transforms = []
-    img_trfms = []
-    if phase == "train":
-        list_transforms.extend(
-            [
-                #Transpose(p=0.5),
-                #Flip(p=0.5),
-                HorizontalFlip(),
-                ShiftScaleRotate(
-                    shift_limit=0,  # no resizing
-                    scale_limit=0.1,
-                    rotate_limit=10,
-                    p=0.5,
-                    border_mode=cv2.BORDER_CONSTANT
-                ),
-            ]
-        )
-        img_trfms = Compose([
-                OneOf(
-                    [
-                        CLAHE(clip_limit=2),
-                        IAASharpen(),
-                        IAAEmboss(),
-                        RandomBrightnessContrast(),
-                        JpegCompression(),
-                        Blur(),
-                        GaussNoise(),
-                    ],
-                    p=0.5,
-                ),
-        ])
-
-
-    list_transforms.extend(
-        [
-            Normalize(mean=mean, std=std, p=1),
-            #Resize(size, size),
-            AT.ToTensor(),  # [6]
-        ]
-    )
-
-    list_trfms = Compose(list_transforms)
-
-    return list_trfms, img_trfms
-
 def get_sampler(df, class_weights=[1, 1]):
     dataset_weights = [class_weights[idx] for idx in df['has_mask']]
     datasampler = sampler.WeightedRandomSampler(dataset_weights, len(df))
     return datasampler
 
 
-def provider(
-    fold,
-    total_folds,
-    images_folder,
-    df_path,
-    phase,
-    size,
-    mean=None,
-    std=None,
-    class_weights=None,
-    batch_size=8,
-    num_workers=4,
-    num_samples=4000,
-):
+def provider(phase, cfg):
+    df_path = os.path.join(cfg['home'], cfg['df_path'])
     df = pd.read_csv(df_path)
     df = df.drop_duplicates('ImageId')
-    df_with_mask = df.query('has_mask == 1')
+    #df_with_mask = df.query('has_mask == 1')
     #df = df_with_mask.copy()
-    df_without_mask = df.query('has_mask==0')
-    df_wom_sampled = df_without_mask.sample(len(df_with_mask))
-    df = pd.concat([df_with_mask, df_wom_sampled])
+    #df_without_mask = df.query('has_mask==0')
+    #df_wom_sampled = df_without_mask.sample(len(df_with_mask))
+    #df = pd.concat([df_with_mask, df_wom_sampled])
     print(df.shape)
+    fold = cfg['fold']
+    total_folds = cfg['total_folds']
     kfold = StratifiedKFold(total_folds, shuffle=True, random_state=69)
     train_idx, val_idx = list(kfold.split(
         df["ImageId"], df["has_mask"]))[fold]
     train_df, val_df = df.iloc[train_idx], df.iloc[val_idx]
     df = train_df if phase == "train" else val_df
     #print(df.shape)
-    image_dataset = SIIMDataset(df, images_folder, size, mean, std, phase)
+    image_dataset = SIIMDataset(df, phase, cfg)
     #datasampler = get_sampler(df, [1, 1])
     datasampler = None
+
+    batch_size = cfg['batch_size'][phase]
+    num_workers = cfg['num_workers']
+
     dataloader = DataLoader(
         image_dataset,
         batch_size=batch_size,
@@ -157,44 +103,40 @@ def provider(
     return dataloader
 
 
+def testprovider(cfg):
+    HOME = cfg['home']
+    df_path = cfg['sample_submission']
+    df = pd.read_csv(os.path.join(HOME, df_path))
+    phase = cfg['phase']
+    if phase == "test":
+        df['id_code'] += '.png'
+    batch_size = cfg['batch_size']['test']
+    num_workers = cfg['num_workers']
+
+
+    dataloader = DataLoader(
+        ImageDataset(df, phase, cfg),
+        batch_size=batch_size,
+        num_workers=num_workers,
+        pin_memory=True,
+        shuffle=False
+    )
+    return dataloader
+
+
+
+
 if __name__ == "__main__":
     import time
     start = time.time()
     phase = "train"
-    #phase = "val"
-    num_workers = 0
-    fold = 0
-    total_folds = 5
-    mean = (0.485, 0.456, 0.406)
-    std = (0.229, 0.224, 0.225)
-    #mean = (0.5, 0.5, 0.5)
-    #std = (0.5, 0.5, 0.5)
+    args = get_parser()
+    cfg = load_cfg(args)
+    cfg["num_workers"] = 8
+    cfg["batch_size"]["train"] = 4
+    cfg["batch_size"]["val"] = 4
 
-    size = 512
-
-    root = os.path.dirname(__file__)  # data folder
-    data_folder = "data"
-    train_df_name = 'train.csv'
-    num_samples = None  # 5000
-    class_weights = True  # [1, 1, 1, 1, 1]
-    batch_size = 16
-    #images_folder = os.path.join(root, data_folder, "train_png/")  #
-    df_path = os.path.join(root, data_folder, train_df_name)  #
-
-    dataloader = provider(
-        fold,
-        total_folds,
-        data_folder,
-        df_path,
-        phase,
-        size,
-        mean,
-        std,
-        class_weights=class_weights,
-        batch_size=batch_size,
-        num_workers=num_workers,
-        num_samples=num_samples,
-    )
+    dataloader = provider(phase, cfg)
     total_labels = []
     total_len = len(dataloader)
     from collections import defaultdict

@@ -1,9 +1,0 @@
-12:15:08 Starting epoch: 0 | phase: train 
-12:16:26 Starting epoch: 0 | phase: train 
-12:17:42 Starting epoch: 0 | phase: train 
-12:22:42 Starting epoch: 0 | phase: train 
-12:25:10 train 0 | loss: 0.4722 | best/base dice: 0.0122/0.0122
-
-12:25:10 Time taken for train phase: 02:28 
-
-12:25:10 Starting epoch: 0 | phase: val 
