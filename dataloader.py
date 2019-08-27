@@ -45,6 +45,8 @@ class SIIMDataset(Dataset):
         augmented = self.transforms(image=img, mask=mask)
         img = augmented['image']# / 255.0
         mask = augmented['mask']
+        #extra_augs = self.img_trfms(image=img)
+        #img = extra_augs['image']
         #img = torch.Tensor(img)
         #mask = torch.Tensor(mask)
         target = {}
@@ -72,7 +74,6 @@ def provider(phase, cfg):
     #df = df_with_mask.copy()
     df_without_mask = df.query('has_mask==0')
     df_wom_sampled = df_without_mask.sample(len(df_with_mask), random_state=69)
-    print
     df = pd.concat([df_with_mask, df_wom_sampled])
 
     fold = cfg['fold']

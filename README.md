@@ -90,13 +90,39 @@ Val optimized th: 0.402, LB: 0.8385
 I'm still using equal pos and neg images
 
 
-### I'm back :D
+### 27 Aug
+
+I'm back :D
 
 oh gosh!, gotta do so much.
 
-*💡*
+### *💡*
+
 * Save masks with dtype uint8 instead of float32, 4x less space., resaving npy masks in uint8 format. Dayummm, npy_masks_1024: 42GB -> 11GB 🤯
 * horizontal flip is detrimental, best lr is 1e-4
+* Setting Random states is fucking important.
+* Always make sure mask out of dataloader are in [0, 1], ToTensor is buggy, bc uint8 masks are divided by 255.
+
+
+
+`278_unetresnet34_f1_test`: just reproducing kernel results.
+
+`278_unetresnet34_f1_test2`: with 0.05, 0.05, 10 shiftscalerotate only
+
+`278_unetresnet34_f1_test3`: with horizontal flip + 0.1, 0.1, 20 shiftscalerotate
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 https://github.com/JunMa11/SegLoss

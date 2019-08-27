@@ -136,12 +136,12 @@ def get_transforms(phase, cfg):
     if phase == "train":
         list_transforms.extend(
             [
-                #HorizontalFlip(),
+                HorizontalFlip(),
                 ShiftScaleRotate(
-                    shift_limit=0.05,
-                    scale_limit=0.05,
-                    rotate_limit=10,
-                    p=0.5,
+                    shift_limit=0.1,
+                    scale_limit=0.1,
+                    rotate_limit=20,
+                    p=0.7,
                     border_mode=1 #cv2.BORDER_CONSTANT
                 ),
             ]
