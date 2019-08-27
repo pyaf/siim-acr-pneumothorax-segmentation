@@ -68,20 +68,21 @@ def provider(phase, cfg):
     df_path = os.path.join(cfg['home'], cfg['df_path'])
     df = pd.read_csv(df_path)
     df = df.drop_duplicates('ImageId')
-    #df_with_mask = df.query('has_mask == 1')
+    df_with_mask = df.query('has_mask == 1')
     #df = df_with_mask.copy()
-    #df_without_mask = df.query('has_mask==0')
-    #df_wom_sampled = df_without_mask.sample(len(df_with_mask))
-    #df = pd.concat([df_with_mask, df_wom_sampled])
-    print(df.shape)
+    df_without_mask = df.query('has_mask==0')
+    df_wom_sampled = df_without_mask.sample(len(df_with_mask), random_state=69)
+    df = pd.concat([df_with_mask, df_wom_sampled])
+
     fold = cfg['fold']
     total_folds = cfg['total_folds']
     kfold = StratifiedKFold(total_folds, shuffle=True, random_state=69)
-    train_idx, val_idx = list(kfold.split(
-        df["ImageId"], df["has_mask"]))[fold]
+    train_idx, val_idx = list(kfold.split(df["ImageId"], df["has_mask"]))[fold]
     train_df, val_df = df.iloc[train_idx], df.iloc[val_idx]
+    com = [x for x in train_df.ImageId.tolist() if x in val_df.ImageId.tolist()]
+
     df = train_df if phase == "train" else val_df
-    #print(df.shape)
+    print(df.shape)
     image_dataset = SIIMDataset(df, phase, cfg)
     #datasampler = get_sampler(df, [1, 1])
     datasampler = None

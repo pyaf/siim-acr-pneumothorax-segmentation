@@ -204,6 +204,9 @@ def check_sanctity(dataloaders):
         common = [x for x in tnames if x in vnames]
         if len(common):
             print("TRAIN AND VAL SET NOT DISJOINT")
+            print("total common files:", len(common))
+            print(len(tnames), len(vnames))
+            #print(common)
             exit()
     else:
         print("No sanctity check")

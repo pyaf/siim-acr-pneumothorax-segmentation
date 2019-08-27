@@ -85,8 +85,8 @@ class Meter:
         self.targets = []
         self.phase = phase
         self.epoch = epoch
-        self.size = 256
         self.save_folder = os.path.join(save_folder, "logs")
+        self.size = 256
         self.base_threshold = 0.7
         self.base_dice_scores = []
         self.dice_neg_scores = []
@@ -166,7 +166,7 @@ def epoch_log(opt, log, tb, phase, epoch, epoch_loss, meter, start):
     lr = opt.param_groups[-1]["lr"]
 
     log("lr: %f | IoU: %0.4f" % (lr, iou))
-    log("dice: %0.4f | dice_neg: %0.4f | dice_pos: %0.4f" % (dice, dice_neg, dice_pos))
+    log("dice: %0.4f | dice_neg: %0.4f | dice_pos: %0.4f \n" % (dice, dice_neg, dice_pos))
 
     logger.log_value("lr", lr, epoch)
     logger.log_value("loss", epoch_loss, epoch)
