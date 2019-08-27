@@ -138,8 +138,8 @@ def get_transforms(phase, cfg):
             [
                 #HorizontalFlip(),
                 ShiftScaleRotate(
-                    shift_limit=0.1,
-                    scale_limit=0.1,
+                    shift_limit=0.05,
+                    scale_limit=0.05,
                     rotate_limit=10,
                     p=0.5,
                     border_mode=1 #cv2.BORDER_CONSTANT

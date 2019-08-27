@@ -87,7 +87,7 @@ class Meter:
         self.epoch = epoch
         self.save_folder = os.path.join(save_folder, "logs")
         self.size = 256
-        self.base_threshold = 0.7
+        self.base_threshold = 0.5
         self.base_dice_scores = []
         self.dice_neg_scores = []
         self.dice_pos_scores = []

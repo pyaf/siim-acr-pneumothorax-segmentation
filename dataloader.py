@@ -38,7 +38,7 @@ class SIIMDataset(Dataset):
         mask_path = os.path.join(self.root, "npy_masks_512", image_id + '.npy')
         img = np.load(image_path)
         img = np.repeat(img, 3, axis=-1)
-        mask = np.load(mask_path)
+        mask = np.load(mask_path).astype('float32') # [10]
 
         #if self.phase == "train":
         #    img = self.img_trfms(image=img)['image'] # only for RGB
@@ -72,6 +72,7 @@ def provider(phase, cfg):
     #df = df_with_mask.copy()
     df_without_mask = df.query('has_mask==0')
     df_wom_sampled = df_without_mask.sample(len(df_with_mask), random_state=69)
+    print
     df = pd.concat([df_with_mask, df_wom_sampled])
 
     fold = cfg['fold']
@@ -79,8 +80,6 @@ def provider(phase, cfg):
     kfold = StratifiedKFold(total_folds, shuffle=True, random_state=69)
     train_idx, val_idx = list(kfold.split(df["ImageId"], df["has_mask"]))[fold]
     train_df, val_df = df.iloc[train_idx], df.iloc[val_idx]
-    com = [x for x in train_df.ImageId.tolist() if x in val_df.ImageId.tolist()]
-
     df = train_df if phase == "train" else val_df
     print(df.shape)
     image_dataset = SIIMDataset(df, phase, cfg)
@@ -172,4 +171,5 @@ https://github.com/btgraham/SparseConvNet/tree/kaggle_Diabetic_Retinopathy_compe
 [7]: indices of hard examples, evaluated using 0.81 scoring model.
 [10]: albumentation's ToTensor supports (w, h) images, no grayscale, so (w, h, 1). IMP: It doesn't give any warning, returns transposed image (weird, yeah)
 [12], .tolist() gives CUDA initialization error, it needs to be in numpy array with np.int32 dtype to avoid it.
+[13]: It is of utmost importance that mask is in float format, mask natively contains 0, 1, if it isn't converted to float32, it'll be divided by 255 in ToTensor()
 """
