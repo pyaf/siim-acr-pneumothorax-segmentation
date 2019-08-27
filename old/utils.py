@@ -1,0 +1,59 @@
+'''
+probs = (probs > 0.5).float()
+
+dice_test = compute_dice(probs.detach().cpu().numpy(), targets.detach().cpu().numpy())
+
+dice_all = []
+for i in range(len(targets)):
+    dice_i = compute_dice(probs[i].detach().cpu().numpy(), targets[i].detach().cpu().numpy())
+    dice_all.append(dice_i)
+#print(dice, dice_test, np.mean(dice_all))
+
+
+def compute_dice(im1, im2, empty_score=1.0):
+    """
+    Computes the Dice coefficient, a measure of set similarity.
+    Parameters
+    ----------
+    im1 : array-like, bool
+        Any array of arbitrary size. If not boolean, will be converted.
+    im2 : array-like, bool
+        Any other array of identical size. If not boolean, will be converted.
+    Returns
+    -------
+    dice : float
+        Dice coefficient as a float on range [0,1].
+        Maximum similarity = 1
+        No similarity = 0
+        Both are empty (sum eq to zero) = empty_score
+
+    Notes
+    -----
+    The order of inputs for `dice` is irrelevant. The result will be
+    identical if `im1` and `im2` are switched.
+    """
+    im1 = np.asarray(im1).astype(np.bool)
+    im2 = np.asarray(im2).astype(np.bool)
+
+    if im1.shape != im2.shape:
+        raise ValueError("Shape mismatch: im1 and im2 must have the same shape.")
+
+    im_sum = im1.sum() + im2.sum()
+    if im_sum == 0:
+        return empty_score
+
+    # Compute Dice coefficient
+    intersection = np.logical_and(im1, im2)
+
+    return 2. * intersection.sum() / im_sum
+
+preds and target both empty: 1
+one of preds and target positive: 0
+preds and target both positive, non overallaping: 0
+preds and target both positive, partially overallaping: 0-1
+
+
+
+'''
+
+

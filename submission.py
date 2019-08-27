@@ -28,8 +28,24 @@ warnings.filterwarnings("ignore")
 
 def get_parser():
     parser = ArgumentParser()
-    parser.add_argument("-c", "--ckpt_path",
-                        dest="ckpt_path", help="Checkpoint to use")
+    #parser.add_argument("-c", "--ckpt_path",
+    #                    dest="ckpt_path", help="Checkpoint to use")
+    parser.add_argument(
+        "-f",
+        "--file",
+        dest="filepath",
+        help="experiment config file",
+        metavar="FILE",
+        required=True,
+    )
+    parser.add_argument(
+        "-e",
+        "--epoch",
+        type=int,
+        dest="epoch",
+        help="Epoch to use ckpt of",
+    )  # usage: -e 10
+
     #parser.add_argument(
     #    "-p",
     #    "--predict_on",
@@ -41,12 +57,16 @@ def get_parser():
 
 
 class TestDataset(data.Dataset):
-    def __init__(self, root, df, size, mean, std, tta=4):
+    def __init__(self, root, df, cfg, tta=4):
         self.root = root
-        self.size = size
         self.fnames = list(df["ImageId"])
         self.num_samples = len(self.fnames)
         self.tta = tta
+        size = cfg["size"]
+        mean = eval(cfg["mean"])
+        std = eval(cfg["std"])
+
+
         self.TTA = albumentations.Compose(
             [
                 albumentations.Rotate(limit=180, p=0.5),
@@ -116,39 +136,42 @@ if __name__ == "__main__":
     """
     parser = get_parser()
     args = parser.parse_args()
-    ckpt_path = args.ckpt_path
+    epoch = args.epoch
+    cfg = load_cfg(args)
     predict_on = "test"
-    model_name, fold = get_model_name_fold(ckpt_path)
 
+    size = cfg['size']
     sample_submission_path = "data/sample_submission.csv"
+    folder = os.path.splitext(os.path.basename(args.filepath))[0]
+    model_folder_path = os.path.join( 'weights', folder)
+    ckpt_path = os.path.join(model_folder_path, f'ckpt{epoch}.pth')
+    npy_folder = os.path.join(model_folder_path, f"{predict_on}_npy/{size}")
 
-    sub_path = ckpt_path.replace(".pth", f"{predict_on}.csv")
-    npy_path = ckpt_path.replace(".pth", f"{predict_on}%d.npy")
+
+    mkdir(npy_folder)
+    sub_path = os.path.join(npy_folder, f"{predict_on}_ckpt{epoch}.csv")
+    npy_path = sub_path.replace(".csv", ".npy")
     tta = 0  # number of augs in tta
 
     root = f"data/{predict_on}_png/"
-    size = 1024
     save_npy = False
     save_rle = True
-    min_size = 3500
-    mean = (0.485, 0.456, 0.406)
-    std = (0.229, 0.224, 0.225)
+    min_size = 2000
     use_cuda = True
-    num_classes = 1
     num_workers = 4
     batch_size = 4
     device = torch.device("cuda" if use_cuda else "cpu")
     setup(use_cuda)
     df = pd.read_csv(sample_submission_path)
     testset = DataLoader(
-        TestDataset(root, df, size, mean, std, tta),
+        TestDataset(root, df, cfg, tta),
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
         pin_memory=True if use_cuda else False,
     )
 
-    model = get_model(model_name, num_classes)
+    model = get_model(cfg)
     model.to(device)
     model.eval()
 
@@ -159,10 +182,9 @@ if __name__ == "__main__":
 
     state = torch.load(ckpt_path, map_location=lambda storage, loc: storage)
     model.load_state_dict(state["state_dict"])
-    best_threshold = state["best_threshold"]
-    best_threshold = 0.5
-    print('best_threshold', best_threshold)
-    #exit()
+    #best_th = state["best_threshold"]
+    best_th = 0.5
+    print('best_threshold', best_th)
     num_batches = len(testset)
     predictions = []
     encoded_pixels = []
@@ -183,10 +205,8 @@ if __name__ == "__main__":
             if save_rle:
                 for probability in preds:
                     if probability.shape != (1024, 1024):
-                        probability = cv2.resize(probability,
-                                dsize=(1024, 1024), interpolation=cv2.INTER_LINEAR)
-                    predict, num_predict = post_process(probability,
-                            best_threshold, min_size)
+                        probability = cv2.resize(probability, (1024, 1024), interpolation=cv2.INTER_LINEAR)
+                    predict, num_predict = post_process(probability, best_th, min_size)
                     if num_predict == 0:
                         encoded_pixels.append('-1')
                     else:

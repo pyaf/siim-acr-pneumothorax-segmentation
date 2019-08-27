@@ -110,6 +110,13 @@ oh gosh!, gotta do so much.
 `278_unetresnet34_f1_test2`: with 0.05, 0.05, 10 shiftscalerotate only
 
 `278_unetresnet34_f1_test3`: with horizontal flip + 0.1, 0.1, 20 shiftscalerotate
+val performance is more or less same, train performance is low compared to test2 version.
+
+ckpt19:
+dice, dice_pos, dice_neg: 0.69/57, 0.53/48, 0.85/0.73 ------- LB: 0.83
+
+*Why is there such a huge discrepancy in val dice score and LB?*
+
 
 
 

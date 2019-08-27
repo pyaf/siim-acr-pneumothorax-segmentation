@@ -100,8 +100,10 @@ class Meter:
         #targets = targets.cpu().numpy()
         #pdb.set_trace()
         probs = torch.sigmoid(outputs)
+
         dice, dice_neg, dice_pos, _, _ = metric(probs, targets, self.base_threshold)
         self.base_dice_scores.append(dice)
+
         self.dice_pos_scores.append(dice_pos)
         self.dice_neg_scores.append(dice_neg)
         preds = predict(probs, self.base_threshold)
@@ -177,6 +179,47 @@ def epoch_log(opt, log, tb, phase, epoch, epoch_loss, meter, start):
 
     return None
 
+
+def compute_dice(im1, im2, empty_score=1.0):
+    """
+    Computes the Dice coefficient, a measure of set similarity.
+    Parameters
+    ----------
+    im1 : array-like, bool
+        Any array of arbitrary size. If not boolean, will be converted.
+    im2 : array-like, bool
+        Any other array of identical size. If not boolean, will be converted.
+    Returns
+    -------
+    dice : float
+        Dice coefficient as a float on range [0,1].
+        Maximum similarity = 1
+        No similarity = 0
+        Both are empty (sum eq to zero) = empty_score
+
+    Notes
+    -----
+    The order of inputs for `dice` is irrelevant. The result will be
+    identical if `im1` and `im2` are switched.
+    """
+    im1 = np.asarray(im1).astype(np.bool)
+    im2 = np.asarray(im2).astype(np.bool)
+
+    if im1.shape != im2.shape:
+        raise ValueError("Shape mismatch: im1 and im2 must have the same shape.")
+
+    im_sum = im1.sum() + im2.sum()
+    if im_sum == 0:
+        return empty_score
+
+    # Compute Dice coefficient
+    intersection = np.logical_and(im1, im2)
+
+    return 2. * intersection.sum() / im_sum
+
+
+
+
 def compute_ious(pred, label, classes, ignore_index=255, only_present=True):
     '''
     `classes` is a list of class labels, ignore background class i.e., 0
@@ -205,16 +248,6 @@ def compute_iou_batch(outputs, labels, classes=None):
         ious.append(compute_ious(pred, label, classes))
     iou = np.nanmean(ious)
     return iou
-
-
-def compute_dice(preds, target):
-    eps = 1 # dice is 1 when both are empty.
-    outputs = np.copy(preds) # IMP
-    inter = np.sum(outputs * target)
-    union = np.sum(outputs) + np.sum(target) + eps
-    t = (2 * inter + eps) / union
-    return t
-
 
 def collate_fn(batch):
     pdb.set_trace()

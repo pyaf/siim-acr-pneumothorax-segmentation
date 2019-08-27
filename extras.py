@@ -129,9 +129,10 @@ def iter_log(log, phase, epoch, iteration, epoch_size, loss, start):
     )
 
 
-def mkdir(folder):
-    if not os.path.exists(folder):
-        os.mkdir(folder)
+def mkdir(path):
+    os.makedirs(path, exist_ok=True)
+    #if not os.path.exists(folder):
+    #    os.mkdir(folder)
 
 
 def save_hyperparameters(trainer, remark):
