@@ -1,0 +1,192 @@
+Time: 2019-08-28 17:30:43.778907
+model_name: efficientnet-b5
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights/18-7_efficientnet-b5_fold0_bgccold/ckpt19.pth
+folder: weights/28-8_efficientnet-b5_f1_test
+fold: 1
+total_folds: 7
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 0
+batchsize: {'train': 16, 'val': 8}
+augmentations: <albumentations.core.composition.Transforms object at 0x7f4ffe531390>
+criterion: BCEWithLogitsLoss()
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 5e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-28 17:34:00.158191
+model_name: efficientnet-b5
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights/18-7_efficientnet-b5_fold0_bgccold/ckpt19.pth
+folder: weights/28-8_efficientnet-b5_f1_test
+fold: 1
+total_folds: 7
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 5e-05
+base_lr: None
+num_workers: 12
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 0
+batchsize: {'train': 16, 'val': 8}
+augmentations: <albumentations.core.composition.Transforms object at 0x7f55bdc70c18>
+criterion: BCEWithLogitsLoss()
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 5e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-28 17:34:40.795308
+model_name: efficientnet-b5
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights/18-7_efficientnet-b5_fold0_bgccold/ckpt19.pth
+folder: weights/28-8_efficientnet-b5_f1_test
+fold: 1
+total_folds: 7
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 5e-05
+base_lr: None
+num_workers: 0
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 0
+batchsize: {'train': 16, 'val': 8}
+augmentations: <albumentations.core.composition.Transforms object at 0x7f9f1a462b70>
+criterion: BCEWithLogitsLoss()
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 5e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-28 17:35:25.123323
+model_name: efficientnet-b5
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights/18-7_efficientnet-b5_fold0_bgccold/ckpt19.pth
+folder: weights/28-8_efficientnet-b5_f1_test
+fold: 1
+total_folds: 7
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 5e-05
+base_lr: None
+num_workers: 0
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 0
+batchsize: {'train': 16, 'val': 8}
+augmentations: <albumentations.core.composition.Transforms object at 0x7fbbf441ec50>
+criterion: BCEWithLogitsLoss()
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 5e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-28 17:36:39.045688
+model_name: efficientnet-b5
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights/18-7_efficientnet-b5_fold0_bgccold/ckpt19.pth
+folder: weights/28-8_efficientnet-b5_f1_test
+fold: 1
+total_folds: 7
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 5e-05
+base_lr: None
+num_workers: 0
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 0
+batchsize: {'train': 16, 'val': 8}
+augmentations: <albumentations.core.composition.Transforms object at 0x7f6050473ac8>
+criterion: BCEWithLogitsLoss()
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 5e-05
+    weight_decay: 0
+)
+remark: 
+Time: 2019-08-28 17:37:44.067322
+model_name: efficientnet-b5
+train_df_name: train.csv
+resume: False
+pretrained: False
+pretrained_path: weights/18-7_efficientnet-b5_fold0_bgccold/ckpt19.pth
+folder: weights/28-8_efficientnet-b5_f1_test
+fold: 1
+total_folds: 7
+num_samples: None
+sampling class weights: None
+size: 256
+top_lr: 5e-05
+base_lr: None
+num_workers: 0
+batchsize: {'train': 16, 'val': 8}
+momentum: 0.95
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+start_epoch: 0
+batchsize: {'train': 16, 'val': 8}
+augmentations: <albumentations.core.composition.Transforms object at 0x7f8b7a79fa20>
+criterion: BCEWithLogitsLoss()
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 5e-05
+    weight_decay: 0
+)
+remark: 

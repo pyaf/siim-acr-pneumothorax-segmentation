@@ -54,6 +54,7 @@ class Meter:
         self.epoch = epoch
         self.save_folder = os.path.join(save_folder, "logs")
         self.best_thresholds = 0.5
+        self.base_thresholds = 0.5
 
     def update(self, targets, outputs):
         '''targets, outputs are detached CUDA tensors'''
@@ -89,10 +90,11 @@ class Meter:
 
     def get_cm(self):
         #pdb.set_trace()
-        thresholds = self.best_thresholds
-        self.predictions = predict(self.predictions, self.best_thresholds)
-        cm = ConfusionMatrix(self.targets, self.predictions)
-        best_acc = accuracy_score(self.targets, self.predictions)
+        base_preds = predict(self.predictions, self.base_thresholds)
+        cm = ConfusionMatrix(self.targets, base_preds)
+
+        best_preds = predict(self.predictions, self.best_thresholds)
+        best_acc = accuracy_score(self.targets, best_preds)
         return cm, best_acc
 
 
@@ -108,7 +110,7 @@ def adjust_lr(lr, optimizer):
 
 
 def epoch_log(log, tb, phase, epoch, epoch_loss, meter, start):
-    diff = time.time() - start
+    #diff = time.time() - start
     cm, best_acc = meter.get_cm()
     acc = cm.overall_stat["Overall ACC"]
     tpr = cm.overall_stat["TPR Macro"] #[7]

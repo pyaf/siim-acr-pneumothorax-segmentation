@@ -1,0 +1,19 @@
+21:43:48 Starting epoch: 0 | phase: train | 21:43:48
+21:47:37 train 0 |  loss: 0.6850 | best_acc: 0.5618 | ACC: 0.5618 | TPR: 0.5618 | PPV: 0.5619 
+
+21:47:37 Class TPR: {0: '0.5371', 1: '0.5864'}
+21:47:37 Class PPV: {0: '0.5650', 1: '0.5589'}
+21:47:37 None
+21:47:38 Starting epoch: 0 | phase: val | 21:47:38
+21:48:55 val 0 |  loss: 0.6714 | best_acc: 0.6301 | ACC: 0.6145 | TPR: 0.6145 | PPV: 0.6159 
+
+21:48:55 Class TPR: {0: '0.6682', 1: '0.5608'}
+21:48:55 Class PPV: {0: '0.6034', 1: '0.6283'}
+21:48:55 None
+21:48:55 ******** New optimal found, saving state ********
+21:48:56 Starting epoch: 0 | phase: new_val | 21:48:56
+21:53:22 new_val 0 |  loss: 0.6637 | best_acc: 0.7438 | ACC: 0.6743 | TPR: 0.6765 | PPV: 0.6465 
+
+21:53:22 Class TPR: {0: '0.6714', 1: '0.6817'}
+21:53:22 Class PPV: {0: '0.8419', 1: '0.4511'}
+21:53:22 None
