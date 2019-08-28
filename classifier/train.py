@@ -64,6 +64,9 @@ class Trainer(object):
         self.device = torch.device("cuda" if self.cuda else "cpu")
         # self.df_path = self.cfg['df_path']
         self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
+        self.pretrained = self.cfg["pretrained"]
+        self.pretrained_path = self.cfg["pretrained_path"]
+
         # self.resume_path = self.cfg['resume_path']
         self.save_folder = os.path.join(HOME, self.folder)
         self.model_path = os.path.join(self.save_folder, "model.pth")
@@ -76,7 +79,7 @@ class Trainer(object):
         )
         logger = logger_init(self.save_folder)
         self.log = logger.info
-        if self.resume:
+        if self.resume or self.pretrained:
             self.load_state()
         else:
             self.initialize_net()
@@ -100,6 +103,10 @@ class Trainer(object):
         if self.resume:
             path = self.resume_path
             self.log("Resuming training, loading {} ...".format(path))
+        elif self.pretrained:
+            path = self.pretrained_path
+            self.log("loading pretrained, {} ...".format(path))
+
         state = torch.load(path, map_location=lambda storage, loc: storage)
         self.net.load_state_dict(state["state_dict"])
 

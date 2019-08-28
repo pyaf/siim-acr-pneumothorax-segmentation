@@ -73,7 +73,7 @@ def provider(phase, cfg):
         df_with_mask = df.query('has_mask == 1')
         #df = df_with_mask.copy()
         df_without_mask = df.query('has_mask==0')
-        df_wom_sampled = df_without_mask.sample(len(df_with_mask), random_state=69)
+        df_wom_sampled = df_without_mask.sample(len(df_with_mask) + 3000, random_state=69)
         df = pd.concat([df_with_mask, df_wom_sampled])
         df = df.sample(frac=1, random_state=69)
 
