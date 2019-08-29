@@ -1,0 +1,14 @@
+13:25:43 loading pretrained, weights/288_efficientnet-b4_f1_o/model.pth ...
+13:25:48 Starting epoch: 0 | phase: train | 13:25:48
+13:28:28 train 0 |  loss: 0.5499 | best_acc: 0.7402 | ACC: 0.7402 | TPR: 0.7970 | PPV: 0.7090 
+
+13:28:28 Class TPR: {0: '0.6944', 1: '0.8996'}
+13:28:28 Class PPV: {0: '0.9602', 1: '0.4578'}
+13:28:28 None
+13:28:28 Starting epoch: 0 | phase: val | 13:28:28
+13:29:09 val 0 |  loss: 0.5004 | best_acc: 0.8670 | ACC: 0.7611 | TPR: 0.8216 | PPV: 0.7272 
+
+13:29:09 Class TPR: {0: '0.7125', 1: '0.9307'}
+13:29:09 Class PPV: {0: '0.9728', 1: '0.4815'}
+13:29:09 None
+13:29:10 ******** New optimal found, saving state ********

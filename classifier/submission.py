@@ -17,25 +17,39 @@ from torchvision.datasets.folder import pil_loader
 import torch.utils.data as data
 from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.metrics import cohen_kappa_score
-from models import Model, get_model
+from models import get_model
 from utils import *
+from extras import *
 from image_utils import *
+
 
 
 def get_parser():
     parser = ArgumentParser()
+    #parser.add_argument("-c", "--ckpt_path",
+    #                    dest="ckpt_path", help="Checkpoint to use")
     parser.add_argument(
-        "-c",
-        "--ckpt_path",
-        dest="ckpt_path",
-        help="Checkpoint to use",
+        "-f",
+        "--file",
+        dest="filepath",
+        help="experiment config file",
+        metavar="FILE",
+        required=True,
     )
+    parser.add_argument(
+        "-e",
+        "--epoch",
+        type=int,
+        dest="epoch",
+        help="Epoch to use ckpt of",
+    )  # usage: -e 10
+
     parser.add_argument(
         "-p",
         "--predict_on",
         dest="predict_on",
         help="predict on train or test set, options: test or train",
-        default="resnext101_32x4d",
+        default="test",
     )
     return parser
 
@@ -49,17 +63,17 @@ class TestDataset(data.Dataset):
         self.tta = tta
         self.TTA = albumentations.Compose(
             [
-                albumentations.Rotate(limit=180, p=0.5),
-                albumentations.Transpose(p=0.5),
-                albumentations.Flip(p=0.5),
-                albumentations.RandomScale(scale_limit=0.1),
-                #albumentations.ShiftScaleRotate(
-                #    shift_limit=0,  # no resizing
-                #    scale_limit=0.1,
-                #    rotate_limit=120,
-                #    p=0.5,
-                #    border_mode=cv2.BORDER_CONSTANT
-                #),
+                #albumentations.Rotate(limit=180, p=0.5),
+                #albumentations.Transpose(p=0.5),
+                #albumentations.Flip(p=0.5),
+                #albumentations.RandomScale(scale_limit=0.1),
+                albumentations.ShiftScaleRotate(
+                    shift_limit=0.1,  # no resizing
+                    scale_limit=0.1,
+                    rotate_limit=20,
+                    p=0.5,
+                    border_mode=1
+                ),
                 albumentations.OneOf(
                     [
                         albumentations.CLAHE(clip_limit=2),
@@ -132,34 +146,37 @@ if __name__ == "__main__":
     '''
     parser = get_parser()
     args = parser.parse_args()
-    ckpt_path = args.ckpt_path
+    epoch = args.epoch
+    cfg = load_cfg(args)
     predict_on = args.predict_on
-    model_name, fold = get_model_name_fold(ckpt_path)
 
+    size = cfg['size']
     if predict_on == "test":
         sample_submission_path = "../data/sample_submission.csv"
     else:
         sample_submission_path = "../data/train.csv"
 
-    tta = 4 # number of augs in tta
-    sub_path = ckpt_path.replace(".pth", f"{predict_on}.csv")
-    root = f"../data/{predict_on}_png/"
-    size = 256
-    mean = (0.485, 0.456, 0.406)
-    std = (0.229, 0.224, 0.225)
-    #mean = (0, 0, 0)
-    #std = (1, 1, 1)
-    use_cuda = True
-    num_classes = 1
-    num_workers = 8
-    batch_size = 16
-    device = torch.device("cuda" if use_cuda else "cpu")
-    if use_cuda:
-        cudnn.benchmark = True
-        torch.set_default_tensor_type("torch.cuda.FloatTensor")
+    folder = os.path.splitext(os.path.basename(args.filepath))[0]
+    model_folder_path = os.path.join( 'weights', folder)
+    npy_folder = os.path.join(model_folder_path, f"{predict_on}_npy/{size}")
+    if epoch:
+        ckpt_path = os.path.join(model_folder_path, f'ckpt{epoch}.pth')
+        sub_path = os.path.join(npy_folder, f"{predict_on}_ckpt{epoch}.csv")
     else:
-        torch.set_default_tensor_type("torch.FloatTensor")
+        ckpt_path = os.path.join(model_folder_path, f'model.pth')
+        sub_path = os.path.join(npy_folder, f"{predict_on}_model.csv")
 
+
+    mkdir(npy_folder)
+    tta = 4 # number of augs in tta
+
+    root = f"../data/{predict_on}_png/"
+    mean = eval(cfg['mean'])
+    std = eval(cfg['std'])
+    use_cuda = True
+    num_workers = cfg['num_workers']
+    batch_size = cfg['batch_size'][predict_on]
+    device = torch.device("cuda" if use_cuda else "cpu")
     df = pd.read_csv(sample_submission_path)
     testset = DataLoader(
         TestDataset(root, df, size, mean, std, tta),
@@ -168,7 +185,8 @@ if __name__ == "__main__":
         num_workers=num_workers,
         pin_memory=True if use_cuda else False,
     )
-
+    model_name = cfg['model_name']
+    num_classes = cfg['num_classes']
     model = get_model(model_name, num_classes, pretrained=None)
     model.to(device)
     model.eval()
@@ -185,12 +203,11 @@ if __name__ == "__main__":
     preds = get_predictions(model, testset, tta)
     best_thresholds = 0.5
     pred_labels = predict(preds, best_thresholds)
-    pdb.set_trace()
     df["label"] = pred_labels
     print(f"Saving predictions at {sub_path}")
     df.to_csv(sub_path, index=False)
     print("Predictions saved!")
-
+    pdb.set_trace()
 
 '''
 Footnotes
