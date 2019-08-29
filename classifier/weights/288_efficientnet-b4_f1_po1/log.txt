@@ -12,3 +12,530 @@
 13:29:09 Class PPV: {0: '0.9728', 1: '0.4815'}
 13:29:09 None
 13:29:10 ******** New optimal found, saving state ********
+13:29:11 Total time taken so far: 03:22
+13:29:11 Starting epoch: 1 | phase: train | 13:29:11
+13:30:00 train 1 |  loss: 0.4701 | best_acc: 0.7763 | ACC: 0.7763 | TPR: 0.7976 | PPV: 0.7203 
+
+13:30:00 Class TPR: {0: '0.7592', 1: '0.8360'}
+13:30:00 Class PPV: {0: '0.9417', 1: '0.4989'}
+13:30:00 None
+13:30:00 Starting epoch: 1 | phase: val | 13:30:00
+13:30:13 val 1 |  loss: 0.4528 | best_acc: 0.8660 | ACC: 0.7766 | TPR: 0.8188 | PPV: 0.7302 
+
+13:30:13 Class TPR: {0: '0.7426', 1: '0.8950'}
+13:30:13 Class PPV: {0: '0.9610', 1: '0.4994'}
+13:30:13 None
+13:30:13 ******** New optimal found, saving state ********
+13:30:14 Total time taken so far: 04:25
+13:30:14 Starting epoch: 2 | phase: train | 13:30:14
+13:32:24 train 2 |  loss: 0.3568 | best_acc: 0.8458 | ACC: 0.8458 | TPR: 0.7840 | PPV: 0.7768 
+
+13:32:24 Class TPR: {0: '0.8954', 1: '0.6726'}
+13:32:24 Class PPV: {0: '0.9051', 1: '0.6484'}
+13:32:24 None
+13:32:25 Starting epoch: 2 | phase: val | 13:32:25
+13:32:40 val 2 |  loss: 0.2913 | best_acc: 0.8815 | ACC: 0.8806 | TPR: 0.8175 | PPV: 0.8312 
+
+13:32:40 Class TPR: {0: '0.9313', 1: '0.7038'}
+13:32:40 Class PPV: {0: '0.9164', 1: '0.7461'}
+13:32:40 None
+13:32:42 ******** New optimal found, saving state ********
+13:32:42 Total time taken so far: 06:54
+13:32:42 Starting epoch: 3 | phase: train | 13:32:42
+13:34:50 train 3 |  loss: 0.3056 | best_acc: 0.8663 | ACC: 0.8663 | TPR: 0.7985 | PPV: 0.8092 
+
+13:34:50 Class TPR: {0: '0.9207', 1: '0.6763'}
+13:34:50 Class PPV: {0: '0.9084', 1: '0.7099'}
+13:34:50 None
+13:34:51 Starting epoch: 3 | phase: val | 13:34:51
+13:35:07 val 3 |  loss: 0.2847 | best_acc: 0.8806 | ACC: 0.8782 | TPR: 0.8333 | PPV: 0.8219 
+
+13:35:07 Class TPR: {0: '0.9144', 1: '0.7521'}
+13:35:07 Class PPV: {0: '0.9278', 1: '0.7160'}
+13:35:07 None
+13:35:08 ******** New optimal found, saving state ********
+13:35:09 Total time taken so far: 09:20
+13:35:09 Starting epoch: 4 | phase: train | 13:35:09
+13:37:16 train 4 |  loss: 0.2733 | best_acc: 0.8792 | ACC: 0.8792 | TPR: 0.8149 | PPV: 0.8293 
+
+13:37:16 Class TPR: {0: '0.9308', 1: '0.6989'}
+13:37:16 Class PPV: {0: '0.9151', 1: '0.7434'}
+13:37:16 None
+13:37:17 Starting epoch: 4 | phase: val | 13:37:17
+13:37:32 val 4 |  loss: 0.2723 | best_acc: 0.8787 | ACC: 0.8782 | TPR: 0.8243 | PPV: 0.8243 
+
+13:37:32 Class TPR: {0: '0.9216', 1: '0.7269'}
+13:37:32 Class PPV: {0: '0.9216', 1: '0.7269'}
+13:37:32 None
+13:37:33 ******** New optimal found, saving state ********
+13:37:34 Total time taken so far: 11:45
+13:37:34 Starting epoch: 5 | phase: train | 13:37:34
+13:39:43 train 5 |  loss: 0.2517 | best_acc: 0.8904 | ACC: 0.8904 | TPR: 0.8347 | PPV: 0.8446 
+
+13:39:43 Class TPR: {0: '0.9352', 1: '0.7341'}
+13:39:43 Class PPV: {0: '0.9246', 1: '0.7646'}
+13:39:43 None
+13:39:44 Starting epoch: 5 | phase: val | 13:39:44
+13:39:59 val 5 |  loss: 0.2682 | best_acc: 0.8848 | ACC: 0.8801 | TPR: 0.8270 | PPV: 0.8270 
+
+13:39:59 Class TPR: {0: '0.9228', 1: '0.7311'}
+13:39:59 Class PPV: {0: '0.9228', 1: '0.7311'}
+13:39:59 None
+13:40:00 ******** New optimal found, saving state ********
+13:40:01 Total time taken so far: 14:12
+13:40:01 Starting epoch: 6 | phase: train | 13:40:01
+13:42:07 train 6 |  loss: 0.2291 | best_acc: 0.9059 | ACC: 0.9059 | TPR: 0.8575 | PPV: 0.8673 
+
+13:42:07 Class TPR: {0: '0.9447', 1: '0.7704'}
+13:42:07 Class PPV: {0: '0.9348', 1: '0.7998'}
+13:42:07 None
+13:42:08 Starting epoch: 6 | phase: val | 13:42:08
+13:42:23 val 6 |  loss: 0.2730 | best_acc: 0.8857 | ACC: 0.8852 | TPR: 0.8235 | PPV: 0.8386 
+
+13:42:23 Class TPR: {0: '0.9349', 1: '0.7122'}
+13:42:23 Class PPV: {0: '0.9188', 1: '0.7584'}
+13:42:23 None
+13:42:24 Total time taken so far: 16:36
+13:42:24 Starting epoch: 7 | phase: train | 13:42:24
+13:44:32 train 7 |  loss: 0.2062 | best_acc: 0.9151 | ACC: 0.9151 | TPR: 0.8749 | PPV: 0.8788 
+
+13:44:32 Class TPR: {0: '0.9474', 1: '0.8024'}
+13:44:32 Class PPV: {0: '0.9436', 1: '0.8140'}
+13:44:32 None
+13:44:32 Starting epoch: 7 | phase: val | 13:44:32
+13:44:48 val 7 |  loss: 0.2778 | best_acc: 0.8876 | ACC: 0.8862 | TPR: 0.8331 | PPV: 0.8367 
+
+13:44:48 Class TPR: {0: '0.9289', 1: '0.7374'}
+13:44:48 Class PPV: {0: '0.9250', 1: '0.7484'}
+13:44:48 None
+13:44:49 Total time taken so far: 19:00
+13:44:49 Starting epoch: 8 | phase: train | 13:44:49
+13:46:55 train 8 |  loss: 0.1773 | best_acc: 0.9267 | ACC: 0.9267 | TPR: 0.8912 | PPV: 0.8960 
+
+13:46:55 Class TPR: {0: '0.9553', 1: '0.8271'}
+13:46:55 Class PPV: {0: '0.9507', 1: '0.8413'}
+13:46:55 None
+13:46:56 Starting epoch: 8 | phase: val | 13:46:56
+13:47:11 val 8 |  loss: 0.3040 | best_acc: 0.8768 | ACC: 0.8712 | TPR: 0.8362 | PPV: 0.8102 
+
+13:47:11 Class TPR: {0: '0.8993', 1: '0.7731'}
+13:47:11 Class PPV: {0: '0.9325', 1: '0.6879'}
+13:47:11 None
+13:47:12 Total time taken so far: 21:23
+13:47:12 Starting epoch: 9 | phase: train | 13:47:12
+13:49:20 train 9 |  loss: 0.1618 | best_acc: 0.9361 | ACC: 0.9361 | TPR: 0.9070 | PPV: 0.9082 
+
+13:49:20 Class TPR: {0: '0.9595', 1: '0.8544'}
+13:49:20 Class PPV: {0: '0.9583', 1: '0.8580'}
+13:49:20 None
+13:49:21 Starting epoch: 9 | phase: val | 13:49:21
+13:49:37 val 9 |  loss: 0.3171 | best_acc: 0.8712 | ACC: 0.8712 | TPR: 0.8340 | PPV: 0.8104 
+
+13:49:37 Class TPR: {0: '0.9011', 1: '0.7668'}
+13:49:37 Class PPV: {0: '0.9309', 1: '0.6900'}
+13:49:37 None
+13:49:38 Total time taken so far: 23:49
+13:49:38 Starting epoch: 10 | phase: train | 13:49:38
+13:51:45 train 10 |  loss: 0.1315 | best_acc: 0.9486 | ACC: 0.9486 | TPR: 0.9229 | PPV: 0.9279 
+
+13:51:45 Class TPR: {0: '0.9693', 1: '0.8765'}
+13:51:45 Class PPV: {0: '0.9648', 1: '0.8910'}
+13:51:45 None
+13:51:46 Starting epoch: 10 | phase: val | 13:51:46
+13:52:01 val 10 |  loss: 0.3007 | best_acc: 0.8829 | ACC: 0.8829 | TPR: 0.8303 | PPV: 0.8313 
+
+13:52:01 Class TPR: {0: '0.9253', 1: '0.7353'}
+13:52:01 Class PPV: {0: '0.9241', 1: '0.7384'}
+13:52:01 None
+13:52:02 Total time taken so far: 26:14
+13:52:02 Starting epoch: 11 | phase: train | 13:52:02
+13:54:10 train 11 |  loss: 0.1162 | best_acc: 0.9577 | ACC: 0.9577 | TPR: 0.9355 | PPV: 0.9417 
+
+13:54:10 Class TPR: {0: '0.9756', 1: '0.8954'}
+13:54:10 Class PPV: {0: '0.9702', 1: '0.9132'}
+13:54:10 None
+13:54:11 Starting epoch: 11 | phase: val | 13:54:11
+13:54:27 val 11 |  loss: 0.3043 | best_acc: 0.8838 | ACC: 0.8820 | TPR: 0.8289 | PPV: 0.8299 
+
+13:54:27 Class TPR: {0: '0.9247', 1: '0.7332'}
+13:54:27 Class PPV: {0: '0.9235', 1: '0.7363'}
+13:54:27 None
+13:54:28 Total time taken so far: 28:39
+13:54:28 Starting epoch: 12 | phase: train | 13:54:28
+13:56:35 train 12 |  loss: 0.1189 | best_acc: 0.9573 | ACC: 0.9573 | TPR: 0.9375 | PPV: 0.9389 
+
+13:56:35 Class TPR: {0: '0.9732', 1: '0.9017'}
+13:56:35 Class PPV: {0: '0.9719', 1: '0.9060'}
+13:56:35 None
+13:56:36 Starting epoch: 12 | phase: val | 13:56:36
+13:56:51 val 12 |  loss: 0.3090 | best_acc: 0.8834 | ACC: 0.8824 | TPR: 0.8240 | PPV: 0.8326 
+
+13:56:51 Class TPR: {0: '0.9295', 1: '0.7185'}
+13:56:51 Class PPV: {0: '0.9200', 1: '0.7451'}
+13:56:51 None
+13:57:00 Total time taken so far: 31:11
+13:57:00 Starting epoch: 13 | phase: train | 13:57:00
+13:59:06 train 13 |  loss: 0.1242 | best_acc: 0.9532 | ACC: 0.9532 | TPR: 0.9309 | PPV: 0.9335 
+
+13:59:06 Class TPR: {0: '0.9711', 1: '0.8907'}
+13:59:06 Class PPV: {0: '0.9687', 1: '0.8983'}
+13:59:06 None
+13:59:07 Starting epoch: 13 | phase: val | 13:59:07
+13:59:22 val 13 |  loss: 0.3102 | best_acc: 0.8834 | ACC: 0.8829 | TPR: 0.8280 | PPV: 0.8320 
+
+13:59:22 Class TPR: {0: '0.9271', 1: '0.7290'}
+13:59:22 Class PPV: {0: '0.9226', 1: '0.7415'}
+13:59:22 None
+13:59:23 Total time taken so far: 33:34
+13:59:23 Starting epoch: 14 | phase: train | 13:59:23
+14:01:29 train 14 |  loss: 0.1087 | best_acc: 0.9591 | ACC: 0.9591 | TPR: 0.9420 | PPV: 0.9402 
+
+14:01:29 Class TPR: {0: '0.9729', 1: '0.9112'}
+14:01:29 Class PPV: {0: '0.9745', 1: '0.9060'}
+14:01:29 None
+14:01:30 Starting epoch: 14 | phase: val | 14:01:30
+14:01:45 val 14 |  loss: 0.3097 | best_acc: 0.8838 | ACC: 0.8824 | TPR: 0.8285 | PPV: 0.8310 
+
+14:01:45 Class TPR: {0: '0.9259', 1: '0.7311'}
+14:01:45 Class PPV: {0: '0.9231', 1: '0.7389'}
+14:01:45 None
+14:01:46 Total time taken so far: 35:57
+14:01:46 Starting epoch: 15 | phase: train | 14:01:46
+14:03:53 train 15 |  loss: 0.1162 | best_acc: 0.9587 | ACC: 0.9587 | TPR: 0.9404 | PPV: 0.9403 
+
+14:03:53 Class TPR: {0: '0.9733', 1: '0.9075'}
+14:03:53 Class PPV: {0: '0.9735', 1: '0.9070'}
+14:03:53 None
+14:03:54 Starting epoch: 15 | phase: val | 14:03:54
+14:04:10 val 15 |  loss: 0.3096 | best_acc: 0.8829 | ACC: 0.8815 | TPR: 0.8286 | PPV: 0.8291 
+
+14:04:10 Class TPR: {0: '0.9241', 1: '0.7332'}
+14:04:10 Class PPV: {0: '0.9235', 1: '0.7347'}
+14:04:10 None
+14:04:11 Total time taken so far: 38:22
+14:04:11 Starting epoch: 16 | phase: train | 14:04:11
+14:06:22 train 16 |  loss: 0.1141 | best_acc: 0.9580 | ACC: 0.9580 | TPR: 0.9394 | PPV: 0.9392 
+
+14:06:22 Class TPR: {0: '0.9729', 1: '0.9059'}
+14:06:22 Class PPV: {0: '0.9730', 1: '0.9055'}
+14:06:22 None
+14:06:23 Starting epoch: 16 | phase: val | 14:06:23
+14:06:39 val 16 |  loss: 0.3096 | best_acc: 0.8824 | ACC: 0.8824 | TPR: 0.8285 | PPV: 0.8310 
+
+14:06:39 Class TPR: {0: '0.9259', 1: '0.7311'}
+14:06:39 Class PPV: {0: '0.9231', 1: '0.7389'}
+14:06:39 None
+14:06:40 Total time taken so far: 40:51
+14:06:40 Starting epoch: 17 | phase: train | 14:06:40
+14:08:50 train 17 |  loss: 0.1133 | best_acc: 0.9612 | ACC: 0.9612 | TPR: 0.9411 | PPV: 0.9464 
+
+14:08:50 Class TPR: {0: '0.9774', 1: '0.9049'}
+14:08:50 Class PPV: {0: '0.9729', 1: '0.9199'}
+14:08:50 None
+14:08:51 Starting epoch: 17 | phase: val | 14:08:51
+14:09:06 val 17 |  loss: 0.3114 | best_acc: 0.8829 | ACC: 0.8824 | TPR: 0.8270 | PPV: 0.8315 
+
+14:09:06 Class TPR: {0: '0.9271', 1: '0.7269'}
+14:09:06 Class PPV: {0: '0.9221', 1: '0.7409'}
+14:09:06 None
+14:09:07 Total time taken so far: 43:19
+14:09:07 Starting epoch: 18 | phase: train | 14:09:07
+14:11:15 train 18 |  loss: 0.1157 | best_acc: 0.9567 | ACC: 0.9567 | TPR: 0.9373 | PPV: 0.9376 
+
+14:11:15 Class TPR: {0: '0.9723', 1: '0.9023'}
+14:11:15 Class PPV: {0: '0.9720', 1: '0.9032'}
+14:11:15 None
+14:11:16 Starting epoch: 18 | phase: val | 14:11:16
+14:11:31 val 18 |  loss: 0.3099 | best_acc: 0.8824 | ACC: 0.8820 | TPR: 0.8259 | PPV: 0.8309 
+
+14:11:31 Class TPR: {0: '0.9271', 1: '0.7248'}
+14:11:31 Class PPV: {0: '0.9215', 1: '0.7403'}
+14:11:31 None
+14:11:32 Total time taken so far: 45:44
+14:11:32 Starting epoch: 19 | phase: train | 14:11:32
+14:13:40 train 19 |  loss: 0.1156 | best_acc: 0.9566 | ACC: 0.9566 | TPR: 0.9363 | PPV: 0.9381 
+
+14:13:40 Class TPR: {0: '0.9729', 1: '0.8996'}
+14:13:40 Class PPV: {0: '0.9713', 1: '0.9049'}
+14:13:40 None
+14:13:41 Starting epoch: 19 | phase: val | 14:13:41
+14:13:56 val 19 |  loss: 0.3101 | best_acc: 0.8824 | ACC: 0.8815 | TPR: 0.8264 | PPV: 0.8299 
+
+14:13:56 Class TPR: {0: '0.9259', 1: '0.7269'}
+14:13:56 Class PPV: {0: '0.9220', 1: '0.7377'}
+14:13:56 None
+14:13:57 Total time taken so far: 48:08
+14:13:57 Starting epoch: 20 | phase: train | 14:13:57
+14:16:04 train 20 |  loss: 0.1166 | best_acc: 0.9593 | ACC: 0.9593 | TPR: 0.9397 | PPV: 0.9423 
+
+14:16:04 Class TPR: {0: '0.9750', 1: '0.9044'}
+14:16:04 Class PPV: {0: '0.9726', 1: '0.9120'}
+14:16:04 None
+14:16:05 Starting epoch: 20 | phase: val | 14:16:05
+14:16:21 val 20 |  loss: 0.3112 | best_acc: 0.8829 | ACC: 0.8824 | TPR: 0.8262 | PPV: 0.8317 
+
+14:16:21 Class TPR: {0: '0.9277', 1: '0.7248'}
+14:16:21 Class PPV: {0: '0.9216', 1: '0.7419'}
+14:16:21 None
+14:16:21 Total time taken so far: 50:33
+14:16:21 Starting epoch: 21 | phase: train | 14:16:21
+14:18:29 train 21 |  loss: 0.1181 | best_acc: 0.9555 | ACC: 0.9555 | TPR: 0.9324 | PPV: 0.9384 
+
+14:18:29 Class TPR: {0: '0.9741', 1: '0.8907'}
+14:18:29 Class PPV: {0: '0.9688', 1: '0.9079'}
+14:18:29 None
+14:18:30 Starting epoch: 21 | phase: val | 14:18:30
+14:18:46 val 21 |  loss: 0.3107 | best_acc: 0.8829 | ACC: 0.8829 | TPR: 0.8280 | PPV: 0.8320 
+
+14:18:46 Class TPR: {0: '0.9271', 1: '0.7290'}
+14:18:46 Class PPV: {0: '0.9226', 1: '0.7415'}
+14:18:46 None
+14:18:47 Total time taken so far: 52:58
+14:18:47 Starting epoch: 22 | phase: train | 14:18:47
+14:20:56 train 22 |  loss: 0.1143 | best_acc: 0.9569 | ACC: 0.9569 | TPR: 0.9350 | PPV: 0.9400 
+
+14:20:56 Class TPR: {0: '0.9745', 1: '0.8954'}
+14:20:56 Class PPV: {0: '0.9702', 1: '0.9098'}
+14:20:56 None
+14:20:57 Starting epoch: 22 | phase: val | 14:20:57
+14:21:13 val 22 |  loss: 0.3096 | best_acc: 0.8824 | ACC: 0.8810 | TPR: 0.8283 | PPV: 0.8283 
+
+14:21:13 Class TPR: {0: '0.9234', 1: '0.7332'}
+14:21:13 Class PPV: {0: '0.9234', 1: '0.7332'}
+14:21:13 None
+14:21:14 Total time taken so far: 55:25
+14:21:14 Starting epoch: 23 | phase: train | 14:21:14
+14:23:22 train 23 |  loss: 0.1114 | best_acc: 0.9607 | ACC: 0.9607 | TPR: 0.9415 | PPV: 0.9445 
+
+14:23:22 Class TPR: {0: '0.9760', 1: '0.9070'}
+14:23:22 Class PPV: {0: '0.9734', 1: '0.9156'}
+14:23:22 None
+14:23:23 Starting epoch: 23 | phase: val | 14:23:23
+14:23:38 val 23 |  loss: 0.3108 | best_acc: 0.8834 | ACC: 0.8834 | TPR: 0.8283 | PPV: 0.8329 
+
+14:23:38 Class TPR: {0: '0.9277', 1: '0.7290'}
+14:23:38 Class PPV: {0: '0.9227', 1: '0.7430'}
+14:23:38 None
+14:23:39 Total time taken so far: 57:51
+14:23:39 Starting epoch: 24 | phase: train | 14:23:39
+14:25:47 train 24 |  loss: 0.1112 | best_acc: 0.9598 | ACC: 0.9598 | TPR: 0.9412 | PPV: 0.9427 
+
+14:25:47 Class TPR: {0: '0.9748', 1: '0.9075'}
+14:25:47 Class PPV: {0: '0.9735', 1: '0.9118'}
+14:25:47 None
+14:25:48 Starting epoch: 24 | phase: val | 14:25:48
+14:26:03 val 24 |  loss: 0.3114 | best_acc: 0.8824 | ACC: 0.8824 | TPR: 0.8255 | PPV: 0.8320 
+
+14:26:03 Class TPR: {0: '0.9283', 1: '0.7227'}
+14:26:03 Class PPV: {0: '0.9211', 1: '0.7430'}
+14:26:03 None
+14:26:04 Total time taken so far: 60:15
+14:26:04 Starting epoch: 25 | phase: train | 14:26:04
+14:28:10 train 25 |  loss: 0.1117 | best_acc: 0.9598 | ACC: 0.9598 | TPR: 0.9402 | PPV: 0.9434 
+
+14:28:10 Class TPR: {0: '0.9756', 1: '0.9049'}
+14:28:10 Class PPV: {0: '0.9728', 1: '0.9140'}
+14:28:10 None
+14:28:11 Starting epoch: 25 | phase: val | 14:28:11
+14:28:26 val 25 |  loss: 0.3117 | best_acc: 0.8824 | ACC: 0.8824 | TPR: 0.8262 | PPV: 0.8317 
+
+14:28:26 Class TPR: {0: '0.9277', 1: '0.7248'}
+14:28:26 Class PPV: {0: '0.9216', 1: '0.7419'}
+14:28:26 None
+14:28:27 Total time taken so far: 62:39
+14:28:27 Starting epoch: 26 | phase: train | 14:28:27
+14:30:35 train 26 |  loss: 0.1208 | best_acc: 0.9549 | ACC: 0.9549 | TPR: 0.9337 | PPV: 0.9358 
+
+14:30:35 Class TPR: {0: '0.9720', 1: '0.8954'}
+14:30:35 Class PPV: {0: '0.9701', 1: '0.9016'}
+14:30:35 None
+14:30:36 Starting epoch: 26 | phase: val | 14:30:36
+14:30:51 val 26 |  loss: 0.3097 | best_acc: 0.8834 | ACC: 0.8806 | TPR: 0.8265 | PPV: 0.8280 
+
+14:30:51 Class TPR: {0: '0.9241', 1: '0.7290'}
+14:30:51 Class PPV: {0: '0.9224', 1: '0.7336'}
+14:30:51 None
+14:30:52 Total time taken so far: 65:03
+14:30:52 Starting epoch: 27 | phase: train | 14:30:52
+14:33:00 train 27 |  loss: 0.1135 | best_acc: 0.9587 | ACC: 0.9587 | TPR: 0.9385 | PPV: 0.9417 
+
+14:33:00 Class TPR: {0: '0.9748', 1: '0.9023'}
+14:33:00 Class PPV: {0: '0.9721', 1: '0.9114'}
+14:33:00 None
+14:33:01 Starting epoch: 27 | phase: val | 14:33:01
+14:33:16 val 27 |  loss: 0.3112 | best_acc: 0.8824 | ACC: 0.8810 | TPR: 0.8261 | PPV: 0.8290 
+
+14:33:16 Class TPR: {0: '0.9253', 1: '0.7269'}
+14:33:16 Class PPV: {0: '0.9219', 1: '0.7362'}
+14:33:16 None
+14:33:17 Total time taken so far: 67:29
+14:33:17 Starting epoch: 28 | phase: train | 14:33:17
+14:35:25 train 28 |  loss: 0.1096 | best_acc: 0.9597 | ACC: 0.9597 | TPR: 0.9424 | PPV: 0.9414 
+
+14:35:25 Class TPR: {0: '0.9736', 1: '0.9112'}
+14:35:25 Class PPV: {0: '0.9745', 1: '0.9083'}
+14:35:25 None
+14:35:26 Starting epoch: 28 | phase: val | 14:35:26
+14:35:42 val 28 |  loss: 0.3122 | best_acc: 0.8824 | ACC: 0.8801 | TPR: 0.8217 | PPV: 0.8287 
+
+14:35:42 Class TPR: {0: '0.9271', 1: '0.7164'}
+14:35:42 Class PPV: {0: '0.9193', 1: '0.7381'}
+14:35:42 None
+14:35:43 Total time taken so far: 69:54
+14:35:43 Starting epoch: 29 | phase: train | 14:35:43
+14:37:50 train 29 |  loss: 0.1096 | best_acc: 0.9596 | ACC: 0.9596 | TPR: 0.9418 | PPV: 0.9416 
+
+14:37:50 Class TPR: {0: '0.9739', 1: '0.9096'}
+14:37:50 Class PPV: {0: '0.9741', 1: '0.9091'}
+14:37:50 None
+14:37:51 Starting epoch: 29 | phase: val | 14:37:51
+14:38:07 val 29 |  loss: 0.3109 | best_acc: 0.8824 | ACC: 0.8824 | TPR: 0.8262 | PPV: 0.8317 
+
+14:38:07 Class TPR: {0: '0.9277', 1: '0.7248'}
+14:38:07 Class PPV: {0: '0.9216', 1: '0.7419'}
+14:38:07 None
+14:38:08 Total time taken so far: 72:19
+14:38:08 Starting epoch: 30 | phase: train | 14:38:08
+14:40:15 train 30 |  loss: 0.1097 | best_acc: 0.9616 | ACC: 0.9616 | TPR: 0.9440 | PPV: 0.9450 
+
+14:40:15 Class TPR: {0: '0.9757', 1: '0.9122'}
+14:40:15 Class PPV: {0: '0.9749', 1: '0.9151'}
+14:40:15 None
+14:40:16 Starting epoch: 30 | phase: val | 14:40:16
+14:40:31 val 30 |  loss: 0.3115 | best_acc: 0.8820 | ACC: 0.8820 | TPR: 0.8259 | PPV: 0.8309 
+
+14:40:31 Class TPR: {0: '0.9271', 1: '0.7248'}
+14:40:31 Class PPV: {0: '0.9215', 1: '0.7403'}
+14:40:31 None
+14:40:32 Total time taken so far: 74:44
+14:40:32 Starting epoch: 31 | phase: train | 14:40:32
+14:42:40 train 31 |  loss: 0.1106 | best_acc: 0.9608 | ACC: 0.9608 | TPR: 0.9412 | PPV: 0.9451 
+
+14:42:40 Class TPR: {0: '0.9765', 1: '0.9059'}
+14:42:40 Class PPV: {0: '0.9731', 1: '0.9170'}
+14:42:40 None
+14:42:41 Starting epoch: 31 | phase: val | 14:42:41
+14:42:56 val 31 |  loss: 0.3101 | best_acc: 0.8824 | ACC: 0.8806 | TPR: 0.8265 | PPV: 0.8280 
+
+14:42:56 Class TPR: {0: '0.9241', 1: '0.7290'}
+14:42:56 Class PPV: {0: '0.9224', 1: '0.7336'}
+14:42:56 None
+14:42:57 Total time taken so far: 77:08
+14:42:57 Starting epoch: 32 | phase: train | 14:42:57
+14:45:05 train 32 |  loss: 0.1164 | best_acc: 0.9548 | ACC: 0.9548 | TPR: 0.9348 | PPV: 0.9348 
+
+14:45:05 Class TPR: {0: '0.9709', 1: '0.8986'}
+14:45:05 Class PPV: {0: '0.9709', 1: '0.8986'}
+14:45:05 None
+14:45:06 Starting epoch: 32 | phase: val | 14:45:06
+14:45:20 val 32 |  loss: 0.3107 | best_acc: 0.8834 | ACC: 0.8829 | TPR: 0.8273 | PPV: 0.8323 
+
+14:45:20 Class TPR: {0: '0.9277', 1: '0.7269'}
+14:45:20 Class PPV: {0: '0.9221', 1: '0.7425'}
+14:45:20 None
+14:45:21 Total time taken so far: 79:32
+14:45:21 Starting epoch: 33 | phase: train | 14:45:21
+14:47:29 train 33 |  loss: 0.1155 | best_acc: 0.9554 | ACC: 0.9554 | TPR: 0.9349 | PPV: 0.9361 
+
+14:47:29 Class TPR: {0: '0.9718', 1: '0.8981'}
+14:47:29 Class PPV: {0: '0.9708', 1: '0.9014'}
+14:47:29 None
+14:47:30 Starting epoch: 33 | phase: val | 14:47:30
+14:47:45 val 33 |  loss: 0.3114 | best_acc: 0.8824 | ACC: 0.8824 | TPR: 0.8262 | PPV: 0.8317 
+
+14:47:45 Class TPR: {0: '0.9277', 1: '0.7248'}
+14:47:45 Class PPV: {0: '0.9216', 1: '0.7419'}
+14:47:45 None
+14:47:46 Total time taken so far: 81:57
+14:47:46 Starting epoch: 34 | phase: train | 14:47:46
+14:49:53 train 34 |  loss: 0.1133 | best_acc: 0.9585 | ACC: 0.9585 | TPR: 0.9407 | PPV: 0.9397 
+
+14:49:53 Class TPR: {0: '0.9729', 1: '0.9086'}
+14:49:53 Class PPV: {0: '0.9738', 1: '0.9057'}
+14:49:53 None
+14:49:54 Starting epoch: 34 | phase: val | 14:49:54
+14:50:09 val 34 |  loss: 0.3101 | best_acc: 0.8829 | ACC: 0.8824 | TPR: 0.8285 | PPV: 0.8310 
+
+14:50:09 Class TPR: {0: '0.9259', 1: '0.7311'}
+14:50:09 Class PPV: {0: '0.9231', 1: '0.7389'}
+14:50:09 None
+14:50:10 Total time taken so far: 84:21
+14:50:10 Starting epoch: 35 | phase: train | 14:50:10
+14:52:18 train 35 |  loss: 0.1134 | best_acc: 0.9594 | ACC: 0.9594 | TPR: 0.9401 | PPV: 0.9423 
+
+14:52:18 Class TPR: {0: '0.9748', 1: '0.9054'}
+14:52:18 Class PPV: {0: '0.9729', 1: '0.9116'}
+14:52:18 None
+14:52:19 Starting epoch: 35 | phase: val | 14:52:19
+14:52:34 val 35 |  loss: 0.3116 | best_acc: 0.8848 | ACC: 0.8810 | TPR: 0.8246 | PPV: 0.8296 
+
+14:52:34 Class TPR: {0: '0.9265', 1: '0.7227'}
+14:52:34 Class PPV: {0: '0.9209', 1: '0.7382'}
+14:52:34 None
+14:52:35 Total time taken so far: 86:46
+14:52:35 Starting epoch: 36 | phase: train | 14:52:35
+14:54:42 train 36 |  loss: 0.1141 | best_acc: 0.9576 | ACC: 0.9576 | TPR: 0.9386 | PPV: 0.9389 
+
+14:54:42 Class TPR: {0: '0.9729', 1: '0.9044'}
+14:54:42 Class PPV: {0: '0.9726', 1: '0.9053'}
+14:54:42 None
+14:54:43 Starting epoch: 36 | phase: val | 14:54:43
+14:54:59 val 36 |  loss: 0.3102 | best_acc: 0.8820 | ACC: 0.8815 | TPR: 0.8286 | PPV: 0.8291 
+
+14:54:59 Class TPR: {0: '0.9241', 1: '0.7332'}
+14:54:59 Class PPV: {0: '0.9235', 1: '0.7347'}
+14:54:59 None
+14:55:00 Total time taken so far: 89:11
+14:55:00 Starting epoch: 37 | phase: train | 14:55:00
+14:57:08 train 37 |  loss: 0.1082 | best_acc: 0.9594 | ACC: 0.9594 | TPR: 0.9426 | PPV: 0.9404 
+
+14:57:08 Class TPR: {0: '0.9729', 1: '0.9122'}
+14:57:08 Class PPV: {0: '0.9748', 1: '0.9061'}
+14:57:08 None
+14:57:09 Starting epoch: 37 | phase: val | 14:57:09
+14:57:24 val 37 |  loss: 0.3108 | best_acc: 0.8848 | ACC: 0.8820 | TPR: 0.8252 | PPV: 0.8312 
+
+14:57:24 Class TPR: {0: '0.9277', 1: '0.7227'}
+14:57:24 Class PPV: {0: '0.9210', 1: '0.7414'}
+14:57:24 None
+14:57:25 Total time taken so far: 91:36
+14:57:25 Starting epoch: 38 | phase: train | 14:57:25
+14:59:32 train 38 |  loss: 0.1122 | best_acc: 0.9570 | ACC: 0.9570 | TPR: 0.9390 | PPV: 0.9372 
+
+14:59:32 Class TPR: {0: '0.9715', 1: '0.9065'}
+14:59:32 Class PPV: {0: '0.9731', 1: '0.9013'}
+14:59:32 None
+14:59:33 Starting epoch: 38 | phase: val | 14:59:33
+14:59:49 val 38 |  loss: 0.3103 | best_acc: 0.8820 | ACC: 0.8815 | TPR: 0.8271 | PPV: 0.8296 
+
+14:59:49 Class TPR: {0: '0.9253', 1: '0.7290'}
+14:59:49 Class PPV: {0: '0.9225', 1: '0.7367'}
+14:59:49 None
+14:59:50 Total time taken so far: 94:01
+14:59:50 Starting epoch: 39 | phase: train | 14:59:50
+15:01:59 train 39 |  loss: 0.1127 | best_acc: 0.9598 | ACC: 0.9598 | TPR: 0.9423 | PPV: 0.9418 
+
+15:01:59 Class TPR: {0: '0.9739', 1: '0.9107'}
+15:01:59 Class PPV: {0: '0.9744', 1: '0.9092'}
+15:01:59 None
+15:02:00 Starting epoch: 39 | phase: val | 15:02:00
+15:02:15 val 39 |  loss: 0.3106 | best_acc: 0.8820 | ACC: 0.8806 | TPR: 0.8250 | PPV: 0.8285 
+
+15:02:15 Class TPR: {0: '0.9253', 1: '0.7248'}
+15:02:15 Class PPV: {0: '0.9214', 1: '0.7356'}
+15:02:15 None
+15:02:16 Total time taken so far: 96:27
+15:02:16 Starting epoch: 40 | phase: train | 15:02:16
+15:04:23 train 40 |  loss: 0.1142 | best_acc: 0.9577 | ACC: 0.9577 | TPR: 0.9378 | PPV: 0.9399 
+
+15:04:23 Class TPR: {0: '0.9738', 1: '0.9017'}
+15:04:23 Class PPV: {0: '0.9719', 1: '0.9079'}
+15:04:23 None
+15:04:24 Starting epoch: 40 | phase: val | 15:04:24
+15:04:40 val 40 |  loss: 0.3113 | best_acc: 0.8820 | ACC: 0.8815 | TPR: 0.8256 | PPV: 0.8301 
+
+15:04:40 Class TPR: {0: '0.9265', 1: '0.7248'}
+15:04:40 Class PPV: {0: '0.9215', 1: '0.7388'}
+15:04:40 None
+15:04:41 Total time taken so far: 98:52
+15:04:41 Starting epoch: 41 | phase: train | 15:04:41

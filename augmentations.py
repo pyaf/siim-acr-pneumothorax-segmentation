@@ -174,3 +174,24 @@ def get_transforms(phase, cfg):
 
     return list_trfms, img_trfms
 
+
+
+def get_tta():
+    tta = Compose(
+        [
+            Rotate(limit=180, p=0.5),
+            Transpose(p=0.5),
+            Flip(p=0.5),
+            #RandomScale(scale_limit=0.1),
+            ShiftScaleRotate(
+                shift_limit=0,  # no resizing
+                scale_limit=0.1,
+                rotate_limit=120,
+                p=0.5,
+                border_mode=cv2.BORDER_CONSTANT
+            ),
+
+        ]
+    )
+    return tta
+

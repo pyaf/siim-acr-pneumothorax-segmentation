@@ -118,16 +118,22 @@ dice, dice_pos, dice_neg: 0.69/57, 0.53/48, 0.85/0.73 ------- LB: 0.83
 *Why is there such a huge discrepancy in val dice score and LB?*
 
 
+Gotta use NIH chest xray dataset.
+
+https://www.kaggle.com/nih-chest-xrays/data
+https://stanfordmlgroup.github.io/competitions/chexpert/
+https://physionet.org/content/mimic-cxr/1.0.0/
 
 
+`188_senet154_f1_test`: model.pth ep28 scores 0.8540
 
 
+training classifier:
 
+*`288_efficientnet-b5_f1_test`: 5e-5, bad augmentations.
+* `288_efficientnet-b5_f1_test2`: 5e-5, decent augs.
 
-
-
-
-
+*Give home, give path*
 
 
 
@@ -160,12 +166,13 @@ install latest of segmentation_models.pytorch
 * are you resampling images?
 * self.size, self.top_lr, self.std, self.mean -> insta trained weights used so be careful
 * self.ep2unfreeze
-*
 
 
 
 # Observations:
 
+* vim: detele till a char including it df<char>
+* getting dense cpu tensor in pin memory error? remove default float tesnor setting.
 # NOTES:
 
 # Files informations:

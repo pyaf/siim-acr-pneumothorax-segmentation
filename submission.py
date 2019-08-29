@@ -19,6 +19,7 @@ from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.metrics import cohen_kappa_score
 from PIL import Image
 from models import get_model
+from augmentations import *
 from utils import *
 from image_utils import *
 from mask_functions import *
@@ -65,24 +66,7 @@ class TestDataset(data.Dataset):
         size = cfg["size"]
         mean = eval(cfg["mean"])
         std = eval(cfg["std"])
-
-
-        self.TTA = albumentations.Compose(
-            [
-                albumentations.Rotate(limit=180, p=0.5),
-                albumentations.Transpose(p=0.5),
-                albumentations.Flip(p=0.5),
-                #albumentations.RandomScale(scale_limit=0.1),
-                albumentations.ShiftScaleRotate(
-                    shift_limit=0,  # no resizing
-                    scale_limit=0.1,
-                    rotate_limit=120,
-                    p=0.5,
-                    border_mode=cv2.BORDER_CONSTANT
-                ),
-
-            ]
-        )
+        self.TTA = get_tta()
         self.transform = albumentations.Compose(
             [
                 albumentations.Normalize(mean=mean, std=std, p=1),
@@ -141,15 +125,22 @@ if __name__ == "__main__":
     predict_on = "test"
 
     size = cfg['size']
+    num_workers = cfg['num_workers']
+    batch_size = cfg['batch_size']['test']
+
     sample_submission_path = "data/sample_submission.csv"
     folder = os.path.splitext(os.path.basename(args.filepath))[0]
     model_folder_path = os.path.join( 'weights', folder)
-    ckpt_path = os.path.join(model_folder_path, f'ckpt{epoch}.pth')
     npy_folder = os.path.join(model_folder_path, f"{predict_on}_npy/{size}")
+    if epoch:
+        ckpt_path = os.path.join(model_folder_path, f'ckpt{epoch}.pth')
+        sub_path = os.path.join(npy_folder, f"{predict_on}_ckpt{epoch}.csv")
+    else:
+        ckpt_path = os.path.join(model_folder_path, f'model.pth')
+        sub_path = os.path.join(npy_folder, f"{predict_on}_model.csv")
 
 
     mkdir(npy_folder)
-    sub_path = os.path.join(npy_folder, f"{predict_on}_ckpt{epoch}.csv")
     npy_path = sub_path.replace(".csv", ".npy")
     tta = 0  # number of augs in tta
 
@@ -158,8 +149,6 @@ if __name__ == "__main__":
     save_rle = True
     min_size = 2000
     use_cuda = True
-    num_workers = 4
-    batch_size = 4
     device = torch.device("cuda" if use_cuda else "cpu")
     setup(use_cuda)
     df = pd.read_csv(sample_submission_path)
@@ -182,6 +171,9 @@ if __name__ == "__main__":
 
     state = torch.load(ckpt_path, map_location=lambda storage, loc: storage)
     model.load_state_dict(state["state_dict"])
+    epoch = state['epoch']
+    print(f'Epoch: {epoch}')
+    exit()
     #best_th = state["best_threshold"]
     best_th = 0.5
     print('best_threshold', best_th)
@@ -205,7 +197,8 @@ if __name__ == "__main__":
             if save_rle:
                 for probability in preds:
                     if probability.shape != (1024, 1024):
-                        probability = cv2.resize(probability, (1024, 1024), interpolation=cv2.INTER_LINEAR)
+                        probability = cv2.resize(probability, (1024, 1024),
+                                interpolation=cv2.INTER_LINEAR)
                     predict, num_predict = post_process(probability, best_th, min_size)
                     if num_predict == 0:
                         encoded_pixels.append('-1')

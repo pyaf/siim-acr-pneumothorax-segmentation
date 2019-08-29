@@ -90,8 +90,8 @@ class TestDataset(data.Dataset):
         )
         self.transform = albumentations.Compose(
             [
-                albumentations.Normalize(mean=mean, std=std, p=1),
                 albumentations.Resize(size, size),
+                albumentations.Normalize(mean=mean, std=std, p=1),
                 AT.ToTensor(),
             ]
         )
@@ -99,9 +99,9 @@ class TestDataset(data.Dataset):
     def __getitem__(self, idx):
         fname = self.fnames[idx]
         path = os.path.join(self.root, fname + ".png")
-        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-        image = np.expand_dims(image, -1)
-        image = np.repeat(image, 3, -1)
+        image = cv2.imread(path)
+        #image = np.expand_dims(image, -1)
+        #image = np.repeat(image, 3, -1)
         images = [self.transform(image=image)["image"]]
         for _ in range(self.tta):  # perform ttas
             aug_img = self.TTA(image=image)["image"]
@@ -165,10 +165,13 @@ if __name__ == "__main__":
     else:
         ckpt_path = os.path.join(model_folder_path, f'model.pth')
         sub_path = os.path.join(npy_folder, f"{predict_on}_model.csv")
+        ckpt_path = os.path.join(model_folder_path, f'ckpt.pth')
+        sub_path = os.path.join(npy_folder, f"{predict_on}_ckpt.csv")
+
 
 
     mkdir(npy_folder)
-    tta = 4 # number of augs in tta
+    tta = 0 # number of augs in tta
 
     root = f"../data/{predict_on}_png/"
     mean = eval(cfg['mean'])
@@ -200,6 +203,8 @@ if __name__ == "__main__":
     model.load_state_dict(state["state_dict"])
     best_thresholds = state["best_thresholds"]
     print(f"Best thresholds: {best_thresholds}")
+    epoch = state['epoch']
+    print(f"Epoch of ckpt: {epoch}")
     preds = get_predictions(model, testset, tta)
     best_thresholds = 0.5
     pred_labels = predict(preds, best_thresholds)
@@ -207,7 +212,7 @@ if __name__ == "__main__":
     print(f"Saving predictions at {sub_path}")
     df.to_csv(sub_path, index=False)
     print("Predictions saved!")
-    pdb.set_trace()
+    #pdb.set_trace()
 
 '''
 Footnotes
