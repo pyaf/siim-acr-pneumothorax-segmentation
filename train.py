@@ -39,7 +39,6 @@ class Trainer(object):
         self.args = get_parser()
         self.cfg = load_cfg(self.args)
         self.model_name = self.cfg["model_name"]
-        ext_text = self.cfg["ext_text"]
         self.filename = Path(self.args.filepath).stem
         # {date}_{self.model_name}_f{self.fold}_{ext_text}
         self.folder = f"weights/{self.filename}"
@@ -52,7 +51,6 @@ class Trainer(object):
         self.top_lr = eval(self.cfg["top_lr"])
         self.ep2unfreeze = self.cfg["ep2unfreeze"]
         self.num_epochs = self.cfg["num_epochs"]
-        self.base_lr = self.cfg["base_lr"]
         self.momentum = self.cfg["momentum"]
         self.patience = self.cfg["patience"]
         self.phases = self.cfg["phases"]
@@ -71,7 +69,16 @@ class Trainer(object):
         self.net = get_model(self.cfg)
         #self.criterion = torch.nn.MSELoss()
         #self.criterion = torch.nn.BCEWithLogitsLoss()
-        self.criterion = MixedLoss(10.0, 2.0)
+        #self.criterion = MixedLoss(10.0, 2.0)
+        loss_method = self.cfg['criterion']
+        if loss_method == 'wbce':
+            self.criterion = wbce
+        elif loss_method == 'wsd':
+            self.criterion = wsd
+        elif loss_method == 'wlova':
+            self.criterion = wlova
+        else:
+            self.criterion = MixedLoss(10.0, 2.0)
         self.optimizer = optim.Adam(self.net.parameters(), lr=self.top_lr)
         # self.optimizer = RAdam(self.net.parameters(), lr=self.top_lr)
         # lr_lambda = lambda epoch: epoch // 5
@@ -150,6 +157,7 @@ class Trainer(object):
             images, targets = batch
             loss, outputs = self.forward(images, targets)
             loss = loss / accu_steps
+            #pdb.set_trace()
             if phase == "train":
                 with amp.scale_loss(loss, self.optimizer) as scaled_loss:
                     scaled_loss.backward()

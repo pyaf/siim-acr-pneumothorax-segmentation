@@ -40,15 +40,11 @@ class SIIMDataset(Dataset):
         img = np.repeat(img, 3, axis=-1)
         mask = np.load(mask_path).astype('float32') # [10]
 
-        #if self.phase == "train":
-        #    img = self.img_trfms(image=img)['image'] # only for RGB
+        if self.phase == "train":
+            img = self.img_trfms(image=img)['image'] # only for RGB
         augmented = self.transforms(image=img, mask=mask)
         img = augmented['image']# / 255.0
         mask = augmented['mask']
-        #extra_augs = self.img_trfms(image=img)
-        #img = extra_augs['image']
-        #img = torch.Tensor(img)
-        #mask = torch.Tensor(mask)
         target = {}
         target["labels"] = self.labels[idx]
         target["image_id"] = image_id
@@ -57,7 +53,7 @@ class SIIMDataset(Dataset):
 
     def __len__(self):
         #return 100
-        return len(self.fnames)
+        return 2 * (len(self.fnames)//2 - 1) # [13]
 
 
 def get_sampler(df, class_weights=[1, 1]):
@@ -174,4 +170,5 @@ https://github.com/btgraham/SparseConvNet/tree/kaggle_Diabetic_Retinopathy_compe
 [10]: albumentation's ToTensor supports (w, h) images, no grayscale, so (w, h, 1). IMP: It doesn't give any warning, returns transposed image (weird, yeah)
 [12], .tolist() gives CUDA initialization error, it needs to be in numpy array with np.int32 dtype to avoid it.
 [13]: It is of utmost importance that mask is in float format, mask natively contains 0, 1, if it isn't converted to float32, it'll be divided by 255 in ToTensor()
+[14]: batch with one element gives errors from BN layers
 """

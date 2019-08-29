@@ -1,0 +1,38 @@
+remark: a
+home: /media/ags/DATA/CODE/kaggle/pneumothorax
+#home: /home/eee/ug/15084015/aptos/
+fold: 1
+total_folds: 5
+size: 512
+top_lr: 1e-4
+class_weights: None
+cw_sampling: False
+num_samples: None
+model_name: UNet
+encoder: resnet34
+ext_text: test
+mean: (0.485, 0.456, 0.406)
+std: (0.229, 0.224, 0.225)
+df_path: data/stage2/train.csv
+sample_submission: data/stage2/sample_submission.csv
+data_folder: data/npy_files/
+phases: ["train", "val"]
+batch_size:
+    train: 8
+    val: 4
+    test: 4
+
+num_workers: 12
+num_classes: 1
+ep2unfreeze: 2
+num_epochs: 30
+base_lr: None
+momentum: 0.95
+patience: 3
+criterion: wsd
+sample: False
+count_dict:
+    0: 1000
+    1: 1000
+
+

@@ -1,0 +1,3 @@
+23:47:34 Starting epoch: 0 | phase: train | 23:47:34
+23:48:41 Starting epoch: 0 | phase: train | 23:48:41
+23:49:30 Starting epoch: 0 | phase: train | 23:49:30

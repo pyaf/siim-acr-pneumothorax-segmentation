@@ -77,10 +77,10 @@ class TestDataset(data.Dataset):
 
     def __getitem__(self, idx):
         fname = self.fnames[idx]
-        path = os.path.join(self.root, fname + ".png")
-        image = cv2.imread(path)
-
-        images = [self.transform(image=image)["image"]]
+        path = os.path.join(self.root, fname + ".npy")
+        img = np.load(path)
+        img = np.repeat(img, 3, axis=-1)
+        images = [self.transform(image=img)["image"]]
         for _ in range(self.tta):  # perform ttas
             aug_img = self.TTA(image=image)["image"]
             aug_img = self.transform(image=aug_img)["image"]
@@ -89,14 +89,6 @@ class TestDataset(data.Dataset):
 
     def __len__(self):
         return self.num_samples
-
-
-def get_model_name_fold(ckpt_path):
-    # example ckpt_path = weights/9-7_{modelname}_fold0_text/ckpt12.pth
-    model_folder = ckpt_path.split("/")[1]  # 9-7_{modelname}_fold0_text
-    model_name = "_".join(model_folder.split("_")[1:-2])  # modelname
-    fold = model_folder.split("_")[-2][1:]  # f0 -> 0
-    return model_name, int(fold)
 
 
 def post_process(probability, threshold, min_size):
@@ -128,7 +120,7 @@ if __name__ == "__main__":
     num_workers = cfg['num_workers']
     batch_size = cfg['batch_size']['test']
 
-    sample_submission_path = "data/sample_submission.csv"
+    sample_submission_path = cfg["sample_submission"]
     folder = os.path.splitext(os.path.basename(args.filepath))[0]
     model_folder_path = os.path.join( 'weights', folder)
     npy_folder = os.path.join(model_folder_path, f"{predict_on}_npy/{size}")
@@ -144,13 +136,14 @@ if __name__ == "__main__":
     npy_path = sub_path.replace(".csv", ".npy")
     tta = 0  # number of augs in tta
 
-    root = f"data/{predict_on}_png/"
+    #root = f"data/stage2/{predict_on}_png/"
+    root = 'data/npy_files/npy_test_stage2/'
     save_npy = False
     save_rle = True
     min_size = 2000
     use_cuda = True
     device = torch.device("cuda" if use_cuda else "cpu")
-    setup(use_cuda)
+    #setup(use_cuda)
     df = pd.read_csv(sample_submission_path)
     testset = DataLoader(
         TestDataset(root, df, cfg, tta),
@@ -165,6 +158,7 @@ if __name__ == "__main__":
     model.eval()
 
     print(f"Using {ckpt_path}")
+    print(f"Using {sample_submission_path}")
     print(f"Predicting on: {predict_on} set")
     print(f"Root: {root}")
     print(f"Using tta: {tta}\n")
@@ -173,7 +167,7 @@ if __name__ == "__main__":
     model.load_state_dict(state["state_dict"])
     epoch = state['epoch']
     print(f'Epoch: {epoch}')
-    exit()
+    #exit()
     #best_th = state["best_threshold"]
     best_th = 0.5
     print('best_threshold', best_th)

@@ -116,6 +116,7 @@ ckpt19:
 dice, dice_pos, dice_neg: 0.69/57, 0.53/48, 0.85/0.73 ------- LB: 0.83
 
 *Why is there such a huge discrepancy in val dice score and LB?*
+- because of the sampled dataset I'm training on.
 
 
 Gotta use NIH chest xray dataset.
@@ -133,9 +134,7 @@ training classifier:
 *`288_efficientnet-b5_f1_test`: 5e-5, bad augmentations.
 * `288_efficientnet-b5_f1_test2`: 5e-5, decent augs.
 
-*Give home, give path*
-
-
+*Give home, give path in the dataloader df*
 
 
 https://github.com/JunMa11/SegLoss
@@ -143,6 +142,34 @@ https://github.com/JunMa11/SegLoss
 OLD kaggle competition:
 https://www.kaggle.com/iafoss/unet34-dice-0-8://www.kaggle.com/iafoss/unet34-dice-0-87
 install latest of segmentation_models.pytorch
+
+
+
+*Stage2 is active*
+
+Downloaded the new test set to be predicted on. Stage1 train and test set become the train set for stage2. Analysed my test set predictions, the dice is correct, I'm good with neg dice 0.7, but bad with pos dice 0.3, the bin classifier is no good than the seg predictor.
+
+Things to note:
+* One thing to note is the gap between train and val loss, Gotta do stronger augmentation.
+* Given val loss for resnet34 keeps on decreasing for 1e-4, can try higher lr.
+* Stage2 LB is calculated on 1% of the test dataset.
+
+
+* `298_resnet34_f1_test`:
+
+Ep 25: pos, neg: 0.43/28, 0.80, dice: 0.78/0.72 LB 0.8991, (LB is irrelevant here, only 1% of testdata is used to calculate LB)
+
+
+
+*WHENEVER DEBUGGING MODEL ARCHITECTURES USE BATCH SIZE > 1*
+
+Bang on the loss function.
+https://www.kaggle.com/c/siim-acr-pneumothorax-segmentation/discussion/101429#latest-598791
+
+running them back to back with resnet34 encoder.
+
+
+
 
 
 # Questions and Ideas:
