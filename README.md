@@ -167,6 +167,9 @@ Bang on the loss function.
 https://www.kaggle.com/c/siim-acr-pneumothorax-segmentation/discussion/101429#latest-598791
 
 running them back to back with resnet34 encoder.
+wlova is 1 on neg dice 0 on pos dice
+then comes wbce,
+wsd has ~ same perf on pos dice, but mixed loss is better at neg dice.
 
 
 

@@ -77,6 +77,8 @@ class Trainer(object):
             self.criterion = wsd
         elif loss_method == 'wlova':
             self.criterion = wlova
+        elif loss_method == 'focal':
+            self.criterion = FocalLoss(2.0)
         else:
             self.criterion = MixedLoss(10.0, 2.0)
         self.optimizer = optim.Adam(self.net.parameters(), lr=self.top_lr)
