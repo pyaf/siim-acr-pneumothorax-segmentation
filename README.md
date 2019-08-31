@@ -170,6 +170,7 @@ running them back to back with resnet34 encoder.
 wlova is 1 on neg dice 0 on pos dice
 then comes wbce,
 wsd has ~ same perf on pos dice, but mixed loss is better at neg dice.
+focal loss alone performs at par with mixed loss.
 
 
 

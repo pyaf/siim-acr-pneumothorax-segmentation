@@ -27,5 +27,5 @@ ep2unfreeze: 0 # not implemented
 num_epochs: 30
 momentum: 0.95
 patience: 3
-
+criterion: Mixed
 
