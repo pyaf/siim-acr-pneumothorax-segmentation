@@ -1,0 +1,10 @@
+02:08:09 Starting epoch: 0 | phase: train | 02:08:09
+02:16:58 lr: 0.000100 | IoU: 0.1324
+02:16:58 dice: 0.0764 | dice_neg: 0.0405 | dice_pos: 0.1811 
+
+02:16:58 Starting epoch: 0 | phase: val | 02:16:58
+02:18:42 best_dice: 0.3448
+02:18:42 lr: 0.000100 | IoU: 0.2052
+02:18:42 dice: 0.2820 | dice_neg: 0.2774 | dice_pos: 0.1998 
+
+02:18:42 ******** New optimal found, saving state ********
