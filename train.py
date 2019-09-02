@@ -204,9 +204,9 @@ class Trainer(object):
                 self.log("******** New optimal found, saving state ********")
                 state["best_loss"] = self.best_loss = val_loss
                 torch.save(state, self.model_path)
-            #copyfile(
-            #    self.ckpt_path, os.path.join(self.save_folder, "ckpt%d.pth" % epoch)
-            #)
+            copyfile(
+                self.ckpt_path, os.path.join(self.save_folder, "ckpt%d.pth" % epoch)
+            )
             if epoch == 0 and len(self.dataloaders["train"]) > 100:
                 # make sure train/val ran error free, and it's not debugging
                 commit(self.filename)

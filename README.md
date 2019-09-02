@@ -160,6 +160,17 @@ Things to note:
 Ep 25: pos, neg: 0.43/28, 0.80, dice: 0.78/0.72 LB 0.8991, (LB is irrelevant here, only 1% of testdata is used to calculate LB)
 
 
+* `019_unetden121_f1_test`: densenet121, 512 -> 30 eps, afterwards 1024.
+
+
+
+
+
+
+
+
+
+
 
 *WHENEVER DEBUGGING MODEL ARCHITECTURES USE BATCH SIZE > 1*
 
