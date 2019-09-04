@@ -47,13 +47,13 @@ def get_parser():
         help="Epoch to use ckpt of",
     )  # usage: -e 10
 
-    #parser.add_argument(
-    #    "-p",
-    #    "--predict_on",
-    #    dest="predict_on",
-    #    help="predict on train or test set, options: test or train",
-    #    default="resnext101_32x4d",
-    #)
+    parser.add_argument(
+        "-p",
+        "--predict_on",
+        dest="predict_on",
+        help="predict on train or test set, options: test or train",
+        default="test",
+    )
     return parser
 
 
@@ -69,8 +69,8 @@ class TestDataset(data.Dataset):
         self.TTA = get_tta()
         self.transform = albumentations.Compose(
             [
-                albumentations.Normalize(mean=mean, std=std, p=1),
                 albumentations.Resize(size, size),
+                albumentations.Normalize(mean=mean, std=std, p=1),
                 AT.ToTensor(),
             ]
         )
@@ -114,15 +114,20 @@ if __name__ == "__main__":
     args = parser.parse_args()
     epoch = args.epoch
     cfg = load_cfg(args)
-    predict_on = "test"
+    predict_on = args.predict_on
 
     size = cfg['size']
     num_workers = cfg['num_workers']
     batch_size = cfg['batch_size']['test']
+    if predict_on == "test":
+        sample_submission_path = cfg["sample_submission"]
+        root = 'data/npy_files/npy_test_stage2/'
+    else:
+        sample_submission_path = cfg["df_path"]
+        root = os.path.join(cfg['data_folder'], 'npy_train_512')
 
-    sample_submission_path = cfg["sample_submission"]
     folder = os.path.splitext(os.path.basename(args.filepath))[0]
-    model_folder_path = os.path.join( 'weights', folder)
+    model_folder_path = os.path.join('weights', folder)
     npy_folder = os.path.join(model_folder_path, f"{predict_on}_npy/{size}")
     if epoch:
         ckpt_path = os.path.join(model_folder_path, f'ckpt{epoch}.pth')
@@ -137,7 +142,6 @@ if __name__ == "__main__":
     tta = 0  # number of augs in tta
 
     #root = f"data/stage2/{predict_on}_png/"
-    root = 'data/npy_files/npy_test_stage2/'
     save_npy = False
     save_rle = True
     min_size = 2000

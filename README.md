@@ -163,12 +163,25 @@ Ep 25: pos, neg: 0.43/28, 0.80, dice: 0.78/0.72 LB 0.8991, (LB is irrelevant her
 * `019_unetden121_f1_test`: densenet121, 512 -> 30 eps, afterwards 1024.
 
 
+*FINAL SUBMISSION*
 
 
+Models
+
+* `288_senet154_f1_test`: ckpt.pth trained on old data only Didn't perform well on stage1 though. will fine tune on the new data.
+* `298_unetresnet34_f1_test`: ckpt28
+* `019_unetdn121_f1_test`: ckpt30
+* `019_inresv2_f1_test`: ckpt30
 
 
+Not used
+* `298_deeplabv3_f1_test`: bad perf on train/val set
+*
+tensorboard --logdir v0:288_senet154_f1_test,v1:298_unetresnet34_f1_test,v2:298_deeplabv3_f1_test,v3:019_unetdn121_f1_test,v4:019_inresv2_f1_test
 
-
+Finally submitted res34, dn121, inresv2 model preds:
+* Pixel level majority vote performs best on val set
+* Union of all model preds performs little lower than pixel level majority vote
 
 
 

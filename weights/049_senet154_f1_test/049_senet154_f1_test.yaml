@@ -9,7 +9,7 @@ class_weights: None
 cw_sampling: False
 num_samples: None
 model_name: UNet
-encoder: resnet34
+encoder: senet154
 ext_text: test
 mean: (0.485, 0.456, 0.406)
 std: (0.229, 0.224, 0.225)
@@ -18,14 +18,14 @@ sample_submission: data/stage2/sample_submission.csv
 data_folder: data/npy_files/
 phases: ["train", "val"]
 batch_size:
-    train: 8
-    val: 4
-    test: 4
+    train: 4
+    val: 2
+    test: 2
 
 num_workers: 12
 num_classes: 1
-ep2unfreeze: 2
-num_epochs: 30
+ep2unfreeze: 0
+num_epochs: 40
 base_lr: None
 momentum: 0.95
 patience: 3

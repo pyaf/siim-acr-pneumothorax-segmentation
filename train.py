@@ -61,8 +61,9 @@ class Trainer(object):
         torch.set_num_threads(12)
         self.device = torch.device("cuda" if self.cuda else "cpu")
         # self.df_path = self.cfg['df_path']
-        self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
-        # self.resume_path = self.cfg['resume_path']
+        #self.resume_path = os.path.join(HOME, self.folder, "ckpt.pth")
+        #self.resume_path = self.cfg['resume_path']
+        self.resume_path = os.path.join(HOME, 'weights/288_senet154_f1_test/ckpt.pth')
         self.save_folder = os.path.join(HOME, self.folder)
         self.model_path = os.path.join(self.save_folder, "model.pth")
         self.ckpt_path = os.path.join(self.save_folder, "ckpt.pth")
